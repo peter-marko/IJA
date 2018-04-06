@@ -9,5 +9,8 @@
   # current output
   Error: Could not find or load main class main
   # todo implement main class
+  
+  # running tests
+  $ ant test
   ```
 

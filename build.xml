@@ -47,4 +47,12 @@
   <description>Main target</description>
 </target>
 
+<target name="test" depends="compile">
+  <description>Test target</description>
+  <exec executable="/bin/sh">
+    <arg value="-c" />
+    <arg value=" java -cp lib/junit-4.12.jar org.junit.runner.JUnitCore TestUkol2" />
+  </exec>
+</target>
+
 </project>
