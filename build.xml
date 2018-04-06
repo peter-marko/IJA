@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project name="Block-editor" default="main" basedir=".">
+<!-- setting variables for later use -->
+<!-- the value of a property is accessed via ${} -->
+<property name="src.dir" location="src" />
+<property name="build.dir" location="bin" />
+<property name="docs.dir" location="docs" />
+
+<!-- delete existing build -->
+<target name="clean">
+  <delete dir="${build.dir}" />
+  <delete dir="${docs.dir}" />
+</target>
+
+<!-- create build docs and dist -->
+<target name="makedir">
+  <mkdir dir="${build.dir}" />
+  <mkdir dir="${docs.dir}" />
+</target>
+
+
+<target name="compile" depends="clean, makedir">
+  <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+    <classpath>
+      <pathelement path="lib/junit-4.12.jar"/>
+      <pathelement path="lib/hamcrest-core-1.3.jar"/>
+    </classpath>
+  </javac>
+</target>
+
+<target name="jar" depends="compile">
+  <jar destfile="Block-editor.jar" basedir="${build.dir}">
+    <manifest>
+      <attribute name="Main-Class" value="main" />
+    </manifest>
+  </jar>
+</target>
+
+<target name="run" depends="compile, jar">
+  <description>run the program</description>
+  <java jar="Block-editor.jar" fork="true">
+
+  </java>
+</target>
+
+<target name="main" depends="compile, jar">
+  <description>Main target</description>
+</target>
+
+</project>
