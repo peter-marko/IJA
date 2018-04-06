@@ -2,7 +2,7 @@ public class TypeA extends Type {
 
     public TypeA(String newName) {
         this.name = newName;
-        this.items.add(new Item("val"));
+        this.items.add(new Item("val", 0));
     }
 
     /*public double getNumberOfItems() {

@@ -1,10 +1,10 @@
 public class Item {
-    String name;
-    double value;
-
-    public Item (String newName) {
+    private String name;
+    private double value;
+    
+    public Item (String newName, double value) {
         this.name = newName;
-        this.value = 0.0;
+        this.value = value;
     }
 
     public double getValue() {

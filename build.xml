@@ -51,7 +51,7 @@
   <description>Test target</description>
   <exec executable="/bin/sh">
     <arg value="-c" />
-    <arg value=" java -cp lib/junit-4.12.jar org.junit.runner.JUnitCore TestUkol2" />
+    <arg value="cd bin;java -cp .:../lib/junit.jar org.junit.runner.JUnitCore TestUkol2; cd -" />
   </exec>
 </target>
 

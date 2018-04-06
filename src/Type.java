@@ -2,9 +2,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public abstract class Type {
-    String name;
-    LinkedList items = new LinkedList();
+    protected String name;
+    protected LinkedList items = new LinkedList();
 
+    public Type(String nsme,  LinkedList items) {
+        this.name = name;
+        this.items = items;
+    }
     public int getNumberOfItems() {
         return this.items.size();
     }
