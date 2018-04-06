@@ -3,7 +3,7 @@ import java.util.Queue;
 
 public abstract class Type {
     protected String name;
-    protected LinkedList items = new LinkedList();
+    protected LinkedList<Item> items = new LinkedList();
 
     public Type(String nsme,  LinkedList items) {
         this.name = name;
@@ -13,7 +13,7 @@ public abstract class Type {
         return this.items.size();
     }
 
-    public Type getItem(int n) {
-        return (Type)this.items.get(n);
+    public Item getItem(int n) {
+        return this.items.get(n);
     }
 }

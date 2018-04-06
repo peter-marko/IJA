@@ -2,8 +2,8 @@ import java.util.LinkedList;
 
 public abstract class Block {
     String name;
-    LinkedList outputs = new LinkedList();
-    LinkedList inputs = new LinkedList();
+    LinkedList<Port> outputs = new LinkedList();
+    LinkedList<Port> inputs = new LinkedList();
 
     public int getNumberOfOutputs() {
         return this.outputs.size();
@@ -13,11 +13,11 @@ public abstract class Block {
         return this.inputs.size();
     }
 
-    public Type getOutputType(int n) {
-        return (Type)this.outputs.get(n);
+    public Port getOutputPort(int n) {
+        return this.outputs.get(n);
     }
 
-    public Type getInputType(int n) {
-        return (Type)this.inputs.get(n);
+    public Port getInputPort(int n) {
+        return this.inputs.get(n);
     }
 }
