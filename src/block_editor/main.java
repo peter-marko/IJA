@@ -1,4 +1,7 @@
 package block_editor;
+
+import block_editor.blocks.*;
+import block_editor.types.*;
 public class main {
     public static void main(String[] args) {
         Type coordA = new TypeCoordinate2D(0.0,0.0);

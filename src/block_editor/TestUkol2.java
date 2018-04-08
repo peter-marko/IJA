@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 import java.lang.reflect.Modifier;
+import block_editor.blocks.*;
+import block_editor.types.*;
 
 public class TestUkol2 {
 
