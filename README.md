@@ -11,6 +11,6 @@
   # todo implement main class
   
   # running tests
-  $ ant test
+  $ ant run
   ```
 

@@ -38,18 +38,12 @@
   </jar>
 </target>
 
-<target name="run" depends="compile, jar">
-  <description>run the program</description>
-  <java jar="Block-editor.jar" fork="true">
-
-  </java>
-</target>
 
 <target name="main" depends="compile, jar">
   <description>Main target</description>
 </target>
 
-<target name="test" depends="compile">
+<target name="run" depends="compile">
   <description>Test target</description>
   <exec executable="/bin/sh">
     <arg value="-c" />

@@ -10,7 +10,7 @@ public class main {
         b.outConnect(0, out);
         b.execute();
         b.step();
-        
+        System.out.println("not settttttt "+ out.getVal("simpleeee"));
         System.out.println("after "+out.name+" "+out.getVal("simple"));
         // Type a = new TypeA("ahoj");
         // System.out.println(a.getNumberOfItems());
