@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import block_editor.blocks.*;
 
-public class Type {
+public abstract class Type implements TypeInterface {
     public String name;
     private Map<String, Double> items = new HashMap<String, Double>();
     private Type dst;   // connected to

@@ -3,7 +3,7 @@ package block_editor.blocks;
 import java.util.LinkedList;
 import block_editor.types.*;
 
-public abstract class Block {
+public abstract class Block implements BlockInterface {
     protected String name;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();

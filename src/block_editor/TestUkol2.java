@@ -31,7 +31,6 @@ public class TestUkol2 {
     public void test01(){
         Assert.assertEquals(2, blok1.getNumberOfInputs());
         Assert.assertEquals(2, blok1.getNumberOfInputs());
-        Assert.assertNotEquals(2, 5);
     }
 
     @Test
