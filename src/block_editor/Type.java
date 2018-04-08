@@ -1,3 +1,5 @@
+package block_editor;
+
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Queue;

@@ -47,7 +47,7 @@
   <description>Test target</description>
   <exec executable="/bin/sh">
     <arg value="-c" />
-    <arg value="cd bin;java -cp .:../lib/junit-4.12.jar:../lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestUkol2; cd -" />
+    <arg value="cd bin;java -cp .:../lib/junit-4.12.jar:../lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore block_editor.TestUkol2; cd -" />
   </exec>
 </target>
 

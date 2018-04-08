@@ -1,3 +1,4 @@
+package block_editor;
 import java.util.Map;
 public class BlockDistance2D extends Block {
     public BlockDistance2D (String newName, Type t1, Type t2) {

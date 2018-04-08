@@ -1,3 +1,4 @@
+package block_editor;
 // one dimensional coordinate
 public class TypeSimple extends Type {
 

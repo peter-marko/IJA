@@ -1,3 +1,4 @@
+package block_editor;
 public class TypeA extends Type {
 
     public TypeA(String newName) {

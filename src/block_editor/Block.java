@@ -1,3 +1,4 @@
+package block_editor;
 import java.util.LinkedList;
 
 public abstract class Block {
