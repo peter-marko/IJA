@@ -21,7 +21,7 @@ public class TestUkol2 {
 
         coordA = new TypeCoordinate2D(0.0,0.0);
         coordB = new TypeCoordinate2D(3.0,4.0);
-        b = new BlockDistance2D("Novy block", coordA, coordB);
+        b = new BlockDistance2D("Novy block", 1, coordA, coordB);
         out = new TypeSimple(0.0);
         blok1 = new Block1("Inkorporace");
         blok2 = new Block1("abcd");

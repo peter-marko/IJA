@@ -21,10 +21,12 @@ import javafx.geometry.Bounds;
 import java.awt.Point;
 import java.awt.MouseInfo;
 import java.util.LinkedList;
+
 import block_editor.types.*;
 
 public abstract class Block implements BlockInterface {
     protected String name;
+    protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();
     protected LinkedList<String> inTypes = new LinkedList();
@@ -57,7 +59,7 @@ public abstract class Block implements BlockInterface {
         });
     }
 
-    public InternalWindow constructWindow(Pane canvas) {
+    public InternalWindow constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
         // content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -103,12 +105,17 @@ public abstract class Block implements BlockInterface {
 
         //apply layout to InternalWindow
         InternalWindow interalWindow = new InternalWindow();
+        interalWindow.setStyle("-fx-background-color: white");
         interalWindow.setRoot(windowPane);
         //drag only by title
         interalWindow.makeDragable(titleBar, canvas, this);
         interalWindow.makeDragable(label, canvas, this);
         interalWindow.makeFocusable();
+        closeButton.setOnAction(e -> {System.out.println("Block deleted");});
         interalWindow.setCloseButton(closeButton, canvas, this);
+
+        interalWindow.setParentScheme(parent_scheme);
+        interalWindow.setBlockID(block_id);
 
         return interalWindow;
     }
@@ -137,7 +144,12 @@ public abstract class Block implements BlockInterface {
     public Type getInputPort(int n) {
         return this.inputs.get(n);
     }
-    private class Delta {
-        double x, y;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Integer getID() {
+        return this.id;
     }
 }

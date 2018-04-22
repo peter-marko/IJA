@@ -3,8 +3,9 @@ package block_editor.blocks;
 import java.util.Map;
 import block_editor.types.*;
 public class BlockDistance2D extends Block {
-    public BlockDistance2D (String newName, Type t1, Type t2) {
+    public BlockDistance2D (String newName, Integer newID, Type t1, Type t2) {
         this.name = newName;
+        this.id = newID;
         this.inputs.add(t1);
         this.inputs.add(t2);
         this.inTypes.add(0, TypeCoordinate2D.name);
