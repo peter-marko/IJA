@@ -16,10 +16,12 @@ import javafx.scene.shape.Circle;
 
 
 import java.util.LinkedList;
+
 import block_editor.types.*;
 
 public abstract class Block implements BlockInterface {
     protected String name;
+    protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();
     protected LinkedList<String> inTypes = new LinkedList();
@@ -28,7 +30,7 @@ public abstract class Block implements BlockInterface {
     // compute value and set it to outputs
     public abstract void execute ();
 
-    public InternalWindow constructWindow(Pane canvas) {
+    public InternalWindow constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
         // content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -70,12 +72,17 @@ public abstract class Block implements BlockInterface {
 
         //apply layout to InternalWindow
         InternalWindow interalWindow = new InternalWindow();
+        interalWindow.setStyle("-fx-background-color: white");
         interalWindow.setRoot(windowPane);
         //drag only by title
         interalWindow.makeDragable(titleBar, canvas);
         interalWindow.makeDragable(label, canvas);
         interalWindow.makeFocusable();
+        closeButton.setOnAction(e -> {System.out.println("Block deleted");});
         interalWindow.setCloseButton(closeButton);
+
+        interalWindow.setParentScheme(parent_scheme);
+        interalWindow.setBlockID(block_id);
 
         return interalWindow;
     }
@@ -107,5 +114,9 @@ public abstract class Block implements BlockInterface {
 
     public String getName() {
         return this.name;
+    }
+
+    public Integer getID() {
+        return this.id;
     }
 }

@@ -11,6 +11,17 @@ import javafx.scene.layout.Pane;
  */
 public class InternalWindow extends Region {
 
+    private Scheme parent_scheme;
+    public void setParentScheme(Scheme new_parent_scheme) {
+        this.parent_scheme = new_parent_scheme;
+    }
+    private Integer blockID; // id of block object
+    public void setBlockID(Integer new_id) {
+        this.blockID = new_id;
+    }
+    public Integer getBlockID() {
+        return this.blockID;
+    } 
 
     //current state
 
@@ -57,7 +68,11 @@ public class InternalWindow extends Region {
     }
 
     public void setCloseButton(Button btn) {
-        btn.setOnAction(event -> ((Pane) getParent()).getChildren().remove(this));
+        btn.setOnAction(event -> {
+            System.out.println("Deleting block " + this.getBlockID());
+            this.parent_scheme.deleteBlock(this.getBlockID());
+            ((Pane) getParent()).getChildren().remove(this);
+        });
     }
 
     //just for encapsulation

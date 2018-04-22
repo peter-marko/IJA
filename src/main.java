@@ -45,7 +45,9 @@ public class main extends Application {
     private Pane root;
     private Pane canvas;
 
-    public LinkedList<Block> blocks = new LinkedList<Block>();
+    private Scheme actual_scheme = new Scheme();
+
+    //public LinkedList<Block> blocks = new LinkedList<Block>();
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -72,15 +74,15 @@ public class main extends Application {
         Menu menuFile = new Menu("File");
         Menu menuBlock = new Menu("New block");
 
-        MenuItem itemNew = new MenuItem("New");
+        MenuItem itemNew = new MenuItem("New"); // ----------------------------------------------------- new
         itemNew.setOnAction(e -> {
             // TODO
             System.out.println("Item New Clicked");
-            canvas.getChildren().clear();// clear all visual blocks
-            blocks.clear();// clear all block objects in list
+            canvas.getChildren().clear(); // clear all visual blocks
+            actual_scheme.clear(); // clear all block objects in list
         });
 
-        MenuItem itemOpen = new MenuItem("Open");
+        MenuItem itemOpen = new MenuItem("Open"); // ----------------------------------------------------- open
         itemOpen.setOnAction(e -> {
             // TODO
             FileChooser fc = new FileChooser();
@@ -95,16 +97,14 @@ public class main extends Application {
             }
         });
      
-        MenuItem itemSave = new MenuItem("Save");
+        MenuItem itemSave = new MenuItem("Save"); // ----------------------------------------------------- save
         itemSave.setOnAction(e -> {
             // TODO
             System.out.println("Item Save Clicked");
-            for (Block act_block : blocks) {// for each block object in scheme
-                System.out.println("Saving block '" + act_block.getName() + "'");
-            }
+            actual_scheme.print();
         });
 
-        MenuItem itemSaveAs = new MenuItem("Save as");
+        MenuItem itemSaveAs = new MenuItem("Save as"); // --------------------------------------------------- save as
         itemSaveAs.setOnAction(e -> {
             // TODO
             System.out.println("Item Save as Clicked");
@@ -112,14 +112,15 @@ public class main extends Application {
            
         menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs);
 
-        MenuItem itemNewDistance2D = new MenuItem("Distance 2D");
+        MenuItem itemNewDistance2D = new MenuItem("Distance 2D"); // --------------------------------------- distance 2D
         itemNewDistance2D.setOnAction(e -> {
-            Block b = new BlockDistance2D("Novy block", null, null);
-            canvas.getChildren().add(b.constructWindow(root));
-            blocks.add(b);// add block object to list
+            Block b = new BlockDistance2D("2D distance", actual_scheme.getBlockID(), null, null); // block with new ID in scheme
+            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
+            System.out.println("Creating block " + b.getName() + " " + b.getID());
+            actual_scheme.addBlock(b); // add block object to list
         });
 
-        Button step = new Button();
+        Button step = new Button(); // --------------------------------------------------------------------- step
         step.setText("Step");
         step.setOnAction(e -> {
             // TODO
@@ -127,7 +128,7 @@ public class main extends Application {
         });
         GridPane.setConstraints(step, 1, 0);
 
-        Button run = new Button();
+        Button run = new Button(); // ---------------------------------------------------------------------- run
         run.setText("Run");
         run.setOnAction(e -> {
             // TODO
