@@ -6,9 +6,11 @@ import java.util.Queue;
 import java.util.Iterator;
 import java.util.Map;
 import block_editor.blocks.*;
+import javafx.scene.shape.Line;
 
 public abstract class Type implements TypeInterface {
     public String name;
+    public LinkedList<Line> lines = new LinkedList();
     private Map<String, Double> items = new HashMap<String, Double>();
     private Type dst;   // connected to
 
