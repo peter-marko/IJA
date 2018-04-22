@@ -5,6 +5,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import javafx.stage.FileChooser;
 
@@ -35,11 +36,16 @@ import java.io.IOException;
 
 import block_editor.blocks.*;
 import block_editor.types.*;
+
+//import java.util.LinkedList;
+
 public class main extends Application {
     private File file;
     private GridPane grid;
     private Pane root;
     private Pane canvas;
+
+    public LinkedList<Block> blocks = new LinkedList<Block>();
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -70,6 +76,8 @@ public class main extends Application {
         itemNew.setOnAction(e -> {
             // TODO
             System.out.println("Item New Clicked");
+            canvas.getChildren().clear();// clear all visual blocks
+            blocks.clear();// clear all block objects in list
         });
 
         MenuItem itemOpen = new MenuItem("Open");
@@ -91,6 +99,9 @@ public class main extends Application {
         itemSave.setOnAction(e -> {
             // TODO
             System.out.println("Item Save Clicked");
+            for (Block act_block : blocks) {// for each block object in scheme
+                System.out.println("Saving block '" + act_block.getName() + "'");
+            }
         });
 
         MenuItem itemSaveAs = new MenuItem("Save as");
@@ -105,6 +116,7 @@ public class main extends Application {
         itemNewDistance2D.setOnAction(e -> {
             Block b = new BlockDistance2D("Novy block", null, null);
             canvas.getChildren().add(b.constructWindow(root));
+            blocks.add(b);// add block object to list
         });
 
         Button step = new Button();

@@ -104,4 +104,8 @@ public abstract class Block implements BlockInterface {
     public Type getInputPort(int n) {
         return this.inputs.get(n);
     }
+
+    public String getName() {
+        return this.name;
+    }
 }
