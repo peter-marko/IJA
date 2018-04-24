@@ -15,10 +15,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.shape.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.geometry.Bounds;
+import java.util.Optional;
 
 import java.awt.Point;
+import java.beans.IndexedPropertyChangeEvent;
 import java.awt.MouseInfo;
 import java.util.LinkedList;
 
@@ -29,16 +30,11 @@ public abstract class Block implements BlockInterface {
     protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();
-    protected LinkedList<String> inTypes = new LinkedList();
-    protected LinkedList<String> outTypes = new LinkedList();
+    public LinkedList<Circle> inNodes = new LinkedList();
+    public BorderPane border;
 
-    // compute value and set it to outputs
-    public abstract void execute ();
-
-    private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type) {
-
+    private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type, Scheme parent_scheme) {
         circle.setOnMousePressed(e -> {
-            System.out.print("pressed ");
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
@@ -50,13 +46,20 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
-
             if (x > 0 && y > 0 && x + e.getX() > 0 && y + e.getY() > 0) {
                 type.lines.getLast().setEndX(x + e.getX());
                 type.lines.getLast().setEndY(y + e.getY());
             }
 
         });
+        circle.setOnMouseReleased(e -> {
+
+            Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
+            if (!parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type)) {
+                canvas.getChildren().remove(type.lines.getLast());
+            }
+        });
+
     }
 
     public InternalWindow constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
@@ -83,10 +86,10 @@ public abstract class Block implements BlockInterface {
         for (Type input : inputs) {
             Circle circle = new Circle(0, 0, 5);
             GridPane.setConstraints(circle, 0, 2 * idx + 1);
-            Label inputType = new Label(inTypes.get(idx));
+            Label inputType = new Label(input.name);
             GridPane.setConstraints(inputType, 0, 2 * idx);
             grid.getChildren().addAll(circle, inputType);
-            lineFromCircle(circle, windowPane, canvas, input);
+            inNodes.add(idx, circle);
             idx += 1;
         }
 
@@ -95,29 +98,30 @@ public abstract class Block implements BlockInterface {
             Circle circle = new Circle(0, 0, 5);
             GridPane.setConstraints(circle, 1, 2 * idx + 1);
             GridPane.setHalignment(circle, HPos.RIGHT);
-            Label outPutType = new Label(outTypes.get(idx));
-            GridPane.setConstraints(outPutType, 1, 2 * idx);
-            grid.getChildren().addAll(circle, outPutType);
-            lineFromCircle(circle, windowPane, canvas, output);
+            Label outputType = new Label(output.name);
+            GridPane.setConstraints(outputType, 1, 2 * idx);
+            grid.getChildren().addAll(circle, outputType);
+            lineFromCircle(circle, windowPane, canvas, output, parent_scheme);
             idx += 1;
         }
         windowPane.setCenter(grid);
 
         //apply layout to InternalWindow
-        InternalWindow interalWindow = new InternalWindow();
-        interalWindow.setStyle("-fx-background-color: white");
-        interalWindow.setRoot(windowPane);
+        InternalWindow window = new InternalWindow();
+        window.setStyle("-fx-background-color: white");
+        window.setRoot(windowPane);
+        this.border = windowPane;
         //drag only by title
-        interalWindow.makeDragable(titleBar, canvas, this);
-        interalWindow.makeDragable(label, canvas, this);
-        interalWindow.makeFocusable();
+        window.makeDragable(titleBar, canvas, this);
+        window.makeDragable(label, canvas, this);
+        window.makeFocusable();
         closeButton.setOnAction(e -> {System.out.println("Block deleted");});
-        interalWindow.setCloseButton(closeButton, canvas, this);
+        window.setCloseButton(closeButton, canvas, this);
 
-        interalWindow.setParentScheme(parent_scheme);
-        interalWindow.setBlockID(block_id);
+        window.setParentScheme(parent_scheme);
+        window.setBlockID(block_id);
 
-        return interalWindow;
+        return window;
     }
 
     public void outConnect (int n, Type out) {

@@ -14,6 +14,6 @@ import block_editor.blocks.*;
     public void putVal(String s, double val);
     public void connect (Type dst);
     public void step ();
-    public Type getConnection();
+    public LinkedList<Type> getConnection();
     
  }

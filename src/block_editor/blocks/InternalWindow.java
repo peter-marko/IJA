@@ -38,8 +38,8 @@ public class InternalWindow extends Region {
         for (Type t : block.inputs) {
             if (t != null && t.lines != null) {
                 for (Line l : t.lines) {
-                    l.setStartX(l.getEndX() + x_diff);
-                    l.setStartX(l.getEndY() + y_diff);
+                    l.setEndX(l.getEndX() + x_diff);
+                    l.setEndY(l.getEndY() + y_diff);
                 }
             }
         }

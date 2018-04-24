@@ -25,8 +25,4 @@ public class Block1 extends Block {
     public void execute () {
         
     }
-
-    public InternalWindow constructWindow(Pane canvas) {
-        return new InternalWindow();
-    }
 }

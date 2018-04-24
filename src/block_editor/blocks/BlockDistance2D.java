@@ -3,15 +3,12 @@ package block_editor.blocks;
 import java.util.Map;
 import block_editor.types.*;
 public class BlockDistance2D extends Block {
-    public BlockDistance2D (String newName, Integer newID, Type t1, Type t2) {
+    public BlockDistance2D (String newName, Integer newID) {
         this.name = newName;
         this.id = newID;
-        this.inputs.add(t1);
-        this.inputs.add(t2);
-        this.inTypes.add(0, TypeCoordinate2D.name);
-        this.inTypes.add(1, TypeCoordinate2D.name);
-        this.outTypes.add(0, TypeSimple.name);
-        this.outputs.add(new TypeSimple(0));
+        this.inputs.add(new TypeCoordinate2D());
+        this.inputs.add(new TypeCoordinate2D());
+        this.outputs.add(new TypeSimple());
     }
     public void execute () {
         Type i1 = inputs.get(0);

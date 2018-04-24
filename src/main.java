@@ -29,6 +29,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
+
+import javafx.scene.input.MouseEvent;
+
 import java.io.IOException;
 
 import block_editor.blocks.*;
@@ -55,7 +58,8 @@ public class main extends Application {
         root.getChildren().add(grid);
         root.getChildren().add(canvas);
         // root.getChildren().add(constructWindow());
-        primaryStage.setScene(new Scene(root, 300, 275));
+        Scene s = new Scene(root, 300, 275);
+        primaryStage.setScene(s);
         primaryStage.show();
     }
 
@@ -111,12 +115,21 @@ public class main extends Application {
 
         MenuItem itemNewDistance2D = new MenuItem("Distance 2D"); // --------------------------------------- distance 2D
         itemNewDistance2D.setOnAction(e -> {
-            Block b = new BlockDistance2D("2D distance", actual_scheme.getBlockID(), null, null); // block with new ID in scheme
+            Block b = new BlockDistance2D("2D distance", actual_scheme.getBlockID()); // block with new ID in scheme
             canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
             System.out.println("Creating block " + b.getName() + " " + b.getID());
             actual_scheme.addBlock(b); // add block object to list
         });
 
+        MenuItem itemNewSimpleAdd = new MenuItem("Simple add"); // --------------------------------------- Simple
+        itemNewSimpleAdd.setOnAction(e -> {
+            Block b = new BlockAdd("Simple add", actual_scheme.getBlockID()); // block with new ID in scheme
+            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
+            System.out.println("Creating block " + b.getName() + " " + b.getID());
+            actual_scheme.addBlock(b); // add block object to list
+        });
+
+        
         Button step = new Button(); // --------------------------------------------------------------------- step
         step.setText("Step");
         step.setOnAction(e -> {
@@ -133,7 +146,7 @@ public class main extends Application {
         });
         GridPane.setConstraints(run, 2, 0);
 
-        menuBlock.getItems().addAll(itemNewDistance2D);
+        menuBlock.getItems().addAll(itemNewDistance2D, itemNewSimpleAdd);
 
         GridPane.setConstraints(menuBar, 0, 0);
         menuBar.getMenus().addAll(menuFile, menuBlock);

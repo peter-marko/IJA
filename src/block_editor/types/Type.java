@@ -6,13 +6,14 @@ import java.util.Queue;
 import java.util.Iterator;
 import java.util.Map;
 import block_editor.blocks.*;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.*;
 
 public abstract class Type implements TypeInterface {
     public String name;
+    public boolean set;
     public LinkedList<Line> lines = new LinkedList();
+    private LinkedList<Type> dst = new LinkedList();   // connected to
     private Map<String, Double> items = new HashMap<String, Double>();
-    private Type dst;   // connected to
 
     public int getNumberOfItems() {
         return this.items.size();
@@ -30,29 +31,17 @@ public abstract class Type implements TypeInterface {
     public void putVal(String s, double val) {
         this.items.put(s,val);
     }
+    public void putVal(String s) {
+        this.items.put(s,null);
+    }
 
     /**
      * \brief Set connection variable dst and checks types
      * \param dst output type, connection to other block
      */
     public void connect (Type dst) {
-        if (this.name != dst.name) {
-            throw new RuntimeException("Names of types are different");
-        }
-        Iterator tmp_in = this.items.entrySet().iterator();
-        Iterator tmp_out = dst.items.entrySet().iterator();
-        // iterate and check types of all items in types
-        while (tmp_in.hasNext() && tmp_out.hasNext()) {
-            Map.Entry o = (Map.Entry)tmp_out.next();
-            Map.Entry i = (Map.Entry)tmp_in.next();
-            
-            if (o.getKey() != i.getKey()) {
-                throw new RuntimeException("Names of types are different");
-            }
-            tmp_in.remove(); // avoids a ConcurrentModificationException
-            tmp_out.remove();
-        }
-        this.dst = dst;
+        this.dst.addLast(dst);
+        dst.lines.add(0, this.lines.getLast());
     }
 
     /**
@@ -60,21 +49,23 @@ public abstract class Type implements TypeInterface {
      */
     public void step () {
         // type check + data transfer
-        if (this.dst == null || this.name != this.dst.name) {
-            throw new RuntimeException("Names of types are different"+this.name+ this.dst.name);
-        }
-        this.dst.name = this.name;
-        Iterator tmp_in = this.items.entrySet().iterator();
-        while (tmp_in.hasNext()) {
-            Map.Entry i = (Map.Entry)tmp_in.next();
-            tmp_in.remove(); // avoids a ConcurrentModificationException
-            this.dst.items.put((String)i.getKey(), (double)i.getValue());
-            System.out.println((String)i.getKey() + " = " + (double)i.getValue());
-            // o.setValue(i.getValue());
+        for (Type dst : this.dst) {
+            if (this.name != dst.name) {
+                throw new RuntimeException("Names of types are different"+this.name+ dst.name);
+            }
+            dst.name = this.name;
+            Iterator tmp_in = this.items.entrySet().iterator();
+            while (tmp_in.hasNext()) {
+                Map.Entry i = (Map.Entry)tmp_in.next();
+                tmp_in.remove(); // avoids a ConcurrentModificationException
+                dst.items.put((String)i.getKey(), (double)i.getValue());
+                System.out.println((String)i.getKey() + " = " + (double)i.getValue());
+                // o.setValue(i.getValue());
+            }
         }
     }
 
-    public Type getConnection() {
+    public LinkedList<Type> getConnection() {
         return this.dst;
     }
     

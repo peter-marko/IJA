@@ -2,6 +2,10 @@ package block_editor.blocks;
 
 import java.io.*;
 import java.util.LinkedList;
+
+import javafx.scene.shape.*;
+import javafx.geometry.Bounds;
+
 import block_editor.types.*;
 
 public class Scheme {
@@ -45,5 +49,32 @@ public class Scheme {
             i++;
         }
         blocks.remove(target);
+    }
+
+    public boolean searchBlock(double x, double y, Type srcType) {
+        Line l = srcType.lines.getLast();
+        boolean set = false;
+        for (Block b : this.blocks) {
+            int idx = 0;
+            for (Circle circle : b.inNodes) {
+                Bounds bounds = circle.localToScene(b.border.getBoundsInLocal());
+                double diff_x = x - bounds.getMinX();
+                double diff_y = y - bounds.getMinY();
+                if (diff_x*diff_x + diff_y*diff_y < 25) {
+                    // todo
+                    Type dst = b.inputs.get(idx);
+                    if (dst.name == srcType.name) {
+                        l.setEndX(bounds.getMinX());
+                        l.setEndY(bounds.getMinY());
+                        srcType.connect(dst);
+                        set = true;
+                    } else {
+                        System.out.println(dst.name+" != "+srcType.name);
+                    }
+                }
+                idx += 1;
+            }
+        }
+        return set;
     }
 } 
