@@ -61,19 +61,19 @@ public class Scheme {
     }
 
     public boolean searchBlock(double x, double y, Type srcType) {
-        Line l = srcType.lines.getLast();
+        Line l = srcType.getLines().getLast();
         boolean set = false;
         for (Block b : this.blocks) {
             int idx = 0;
             for (Type inputType : b.inputs) {
-                Circle circle = inputType.node;
-                Bounds bounds = circle.localToScene(b.border.getBoundsInLocal());
+                Circle circle = inputType.getNode();
+                Bounds bounds = circle.localToScene(b.getBorder().getBoundsInLocal());
                 double diff_x = x - bounds.getMinX();
                 double diff_y = y - bounds.getMinY();
                 if (diff_x*diff_x + diff_y*diff_y < 25) {
                     // todo
                     Type dst = b.inputs.get(idx);
-                    if (dst.name == srcType.name) {
+                    if (dst.getName() == srcType.getName()) {
                         GridPane grid = (GridPane) circle.getParent();
                         // removing user inputText if set
                         LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
@@ -93,7 +93,7 @@ public class Scheme {
                         srcType.connect(dst);
                         set = true;
                     } else {
-                        System.out.println(dst.name+" != "+srcType.name);
+                        System.out.println(dst.getName()+" != "+srcType.getName());
                     }
                 }
                 idx += 1;

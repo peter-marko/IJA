@@ -32,7 +32,7 @@ public abstract class Block implements BlockInterface {
     protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();
-    public BorderPane border;
+    protected BorderPane border;
 
     /**
      * \brief Function for actualization of visual block, when added inputText, for user input
@@ -44,24 +44,21 @@ public abstract class Block implements BlockInterface {
             pauseTransition.setOnFinished(event -> lineActualize(0));
             pauseTransition.play();
         }
-        int idx = 0;
         for (Type type : inputs) {
-            Bounds boundsInBorder = type.node.localToScene(this.border.getBoundsInLocal());
+            Bounds boundsInBorder = type.getNode().localToScene(this.border.getBoundsInLocal());
             if (!inputs.isEmpty()) {
-                for (Line l : type.lines) {
+                for (Line l : type.getLines()) {
                     l.setEndX(boundsInBorder.getMinX());
                     l.setEndY(boundsInBorder.getMinY());
                 }
             }
-            idx += 1;
         }
         for (Type type : outputs) {
-            Bounds boundsInBorder = type.node.localToScene(this.border.getBoundsInLocal());
-            for (Line l : type.lines) {
+            Bounds boundsInBorder = type.getNode().localToScene(this.border.getBoundsInLocal());
+            for (Line l : type.getLines()) {
                 l.setStartX(boundsInBorder.getMinX());
                 l.setStartY(boundsInBorder.getMinY());
             }
-            idx += 1;
         }
     }
 
@@ -76,26 +73,34 @@ public abstract class Block implements BlockInterface {
         circle.setOnMouseClicked(e -> {
             if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
                 
-                int idx = 0;
-                for (Map.Entry<String, Double> entry: type.items.entrySet()) {
+                int idx = 1;
+                for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
                     // clearing old line if they existed
-                    for (Line l : type.lines) {
+                    for (Line l : type.getLines()) {
                         canvas.getChildren().remove(l);
                     }
 
-                    type.set = false;
+                    type.set(false);
                     // Label label = new Label(entry.getKey());
                     TextField text = new TextField();
                     text.setPromptText(entry.getKey());
                     text.setStyle("-fx-font: 11 arial;");
                     text.setPrefWidth(60);
                     // portGrid.setConstraints(label, 0, idx + 1);
-                    portGrid.setConstraints(text, 0, idx + 1);
+                    portGrid.setConstraints(text, 0, idx);
                     portGrid.getChildren().addAll(text);
                     // canvas.getChildren().addAll(border);
                     lineActualize(1);
                     idx += 1;
                     // todo aktualizovat vsetky pozicie ciar v tomto bloku
+                    text.textProperty().addListener((obs, oldText, newText) -> {
+                        try {
+                            entry.setValue(Double.parseDouble(newText));
+                            text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
+                        } catch (Exception exception) {
+                            text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
+                        }
+                    });
                 }
             }
         });
@@ -115,9 +120,9 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
-            type.lines.add(new Line(x,y, x + e.getX(), y + e.getY()));
-            type.lines.getLast().setEndX(x + e.getX());
-            canvas.getChildren().add(type.lines.getLast());
+            type.addLine(x,y, x + e.getX(), y + e.getY());
+            type.getLines().getLast().setEndX(x + e.getX());
+            canvas.getChildren().add(type.getLines().getLast());
         });
         
         circle.setOnMouseDragged(e -> {    
@@ -125,15 +130,15 @@ public abstract class Block implements BlockInterface {
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
             if (x > 0 && y > 0 && x + e.getX() > 0 && y + e.getY() > 0) {
-                type.lines.getLast().setEndX(x + e.getX());
-                type.lines.getLast().setEndY(y + e.getY());
+                type.getLines().getLast().setEndX(x + e.getX());
+                type.getLines().getLast().setEndY(y + e.getY());
             }
         });
         
         circle.setOnMouseReleased(e -> {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             if (!parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type)) {
-                canvas.getChildren().remove(type.lines.getLast());
+                canvas.getChildren().remove(type.getLines().getLast());
             }
         });
 
@@ -173,11 +178,11 @@ public abstract class Block implements BlockInterface {
             portGrid.setConstraints(circle, 0, 0);
             GridPane.setConstraints(portGrid, 0, 2 * idx + 1);
             portGrid.getChildren().add(circle);
-            Label inputType = new Label(input.name);
+            Label inputType = new Label(input.getName());
             inputType.setStyle("-fx-font: 12 arial;");
             GridPane.setConstraints(inputType, 0, 2 * idx);
             grid.getChildren().addAll(portGrid, inputType);
-            input.node = circle;
+            input.setNode(circle);
             setValue(circle, portGrid, canvas, input);
             idx += 1;
         }
@@ -187,11 +192,11 @@ public abstract class Block implements BlockInterface {
             Circle circle = new Circle(0, 0, 5);
             GridPane.setConstraints(circle, 1, 2 * idx + 1);
             GridPane.setHalignment(circle, HPos.RIGHT);
-            Label outputType = new Label(output.name);
+            Label outputType = new Label(output.getName());
             outputType.setStyle("-fx-font: 12 arial;");
             GridPane.setConstraints(outputType, 1, 2 * idx);
             grid.getChildren().addAll(circle, outputType);
-            output.node = circle;
+            output.setNode(circle);
             lineFromCircle(circle, windowPane, canvas, output, parent_scheme);
             idx += 1;
         }
@@ -217,12 +222,16 @@ public abstract class Block implements BlockInterface {
 
     public void clear() {
         for (Type output : outputs) {
-            for (Type dstPort : output.dst) {
-                dstPort.set = false;
+            for (Type dstPort : output.getDst()) {
+                dstPort.set(false);
             }
         }
         this.outputs.clear();
         this.inputs.clear();
+    }
+
+    public BorderPane getBorder() {
+        return this.border;
     }
     // propagate outputs to next block
     public void step () {

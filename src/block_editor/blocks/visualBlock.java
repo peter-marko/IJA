@@ -36,16 +36,16 @@ public class visualBlock extends Region {
 
     void update_lines(Block block, double x_diff, double y_diff) {
         for (Type t : block.inputs) {
-            if (t != null && t.lines != null) {
-                for (Line l : t.lines) {
+            if (t != null && t.getLines() != null) {
+                for (Line l : t.getLines()) {
                     l.setEndX(l.getEndX() + x_diff);
                     l.setEndY(l.getEndY() + y_diff);
                 }
             }
         }
         for (Type t : block.outputs) {
-            if (t != null && t.lines != null) {
-                for (Line l : t.lines) {
+            if (t != null && t.getLines() != null) {
+                for (Line l : t.getLines()) {
                     l.setStartX(l.getStartX() + x_diff);
                     l.setStartY(l.getStartY() + y_diff);
                 }
@@ -55,15 +55,15 @@ public class visualBlock extends Region {
 
     void remove_lines(Pane canvas, Block block) {
         for (Type t : block.inputs) {
-            if (t != null && t.lines != null) {
-                for (Line l : t.lines) {
+            if (t != null && t.getLines() != null) {
+                for (Line l : t.getLines()) {
                     canvas.getChildren().remove(l);
                 }
             }
         }
         for (Type t : block.outputs) {
-            if (t != null && t.lines != null) {
-                for (Line l : t.lines) {
+            if (t != null && t.getLines() != null) {
+                for (Line l : t.getLines()) {
                     System.out.println("remove");
                     canvas.getChildren().remove(l);
                 }
@@ -109,11 +109,12 @@ public class visualBlock extends Region {
 
     public void setCloseButton(Button btn, Pane canvas, Block block) {
         btn.setOnAction(event -> {
-            remove_lines(canvas, block);
+            /* remove_lines(canvas, block);
             System.out.println("Deleting block " + this.getBlockID());
             this.parent_scheme.deleteBlock(this.getBlockID());
             ((Pane) getParent()).getChildren().remove(this);
-            block.clear();
+            block.clear(); */
+            block.execute();
         });
     }
 

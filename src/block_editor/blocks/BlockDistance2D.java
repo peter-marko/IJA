@@ -15,6 +15,9 @@ public class BlockDistance2D extends Block {
         Type i2 = inputs.get(1);
         double output = Math.sqrt(Math.pow(i1.getVal("x") - i2.getVal("x"),2) + 
             Math.pow(i1.getVal("y") - i2.getVal("y"), 2));
-        this.outputs.get(0).putVal("simple", output);
+        for (Type dst : outputs.get(0).getDst()) {
+            dst.putVal("simple", output);
+        }
+        System.out.println("final output "+output);
     }
 }
