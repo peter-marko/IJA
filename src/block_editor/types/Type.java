@@ -11,9 +11,10 @@ import javafx.scene.shape.*;
 public abstract class Type implements TypeInterface {
     public String name;
     public boolean set;
+    public javafx.scene.shape.Circle node;
     public LinkedList<Line> lines = new LinkedList();
-    private LinkedList<Type> dst = new LinkedList();   // connected to
-    private Map<String, Double> items = new HashMap<String, Double>();
+    public LinkedList<Type> dst = new LinkedList();   // connected to
+    public Map<String, Double> items = new HashMap<String, Double>();
 
     public int getNumberOfItems() {
         return this.items.size();
@@ -41,7 +42,14 @@ public abstract class Type implements TypeInterface {
      */
     public void connect (Type dst) {
         this.dst.addLast(dst);
+        if (dst.set && !dst.lines.isEmpty()) {
+            Line currentLine = dst.lines.getLast();
+            if (currentLine != null)
+            ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
+            dst.lines.clear();
+        }
         dst.lines.add(0, this.lines.getLast());
+        dst.set = true;
     }
 
     /**

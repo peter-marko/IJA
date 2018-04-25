@@ -17,12 +17,14 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.geometry.Bounds;
 import java.util.Optional;
+import java.util.Map;
 
 import java.awt.Point;
 import java.beans.IndexedPropertyChangeEvent;
 import java.awt.MouseInfo;
 import java.util.LinkedList;
-
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import block_editor.types.*;
 
 public abstract class Block implements BlockInterface {
@@ -30,10 +32,85 @@ public abstract class Block implements BlockInterface {
     protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
     protected LinkedList<Type> inputs = new LinkedList();
-    public LinkedList<Circle> inNodes = new LinkedList();
     public BorderPane border;
 
+    /**
+     * \brief Function for actualization of visual block, when added inputText, for user input
+     * \param pause wait few milliseconds for scene to be redrawn, then actualize
+     */
+    public void lineActualize(int pause) {
+        if (pause == 1) {
+            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.03));
+            pauseTransition.setOnFinished(event -> lineActualize(0));
+            pauseTransition.play();
+        }
+        int idx = 0;
+        for (Type type : inputs) {
+            Bounds boundsInBorder = type.node.localToScene(this.border.getBoundsInLocal());
+            if (!inputs.isEmpty()) {
+                for (Line l : type.lines) {
+                    l.setEndX(boundsInBorder.getMinX());
+                    l.setEndY(boundsInBorder.getMinY());
+                }
+            }
+            idx += 1;
+        }
+        for (Type type : outputs) {
+            Bounds boundsInBorder = type.node.localToScene(this.border.getBoundsInLocal());
+            for (Line l : type.lines) {
+                l.setStartX(boundsInBorder.getMinX());
+                l.setStartY(boundsInBorder.getMinY());
+            }
+            idx += 1;
+        }
+    }
+
+    /**
+     * \brief Function for user input, cretes TextField where user enters input value
+     * \param circle Node when clicked 2 times textfield created
+     * \param portGrid internal gridPane containing circle and input fields
+     * \param type input type
+     * \todo propagate valu to type
+     */
+    private void setValue(Circle circle, GridPane portGrid, Pane canvas, Type type) {
+        circle.setOnMouseClicked(e -> {
+            if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
+                
+                int idx = 0;
+                for (Map.Entry<String, Double> entry: type.items.entrySet()) {
+                    // clearing old line if they existed
+                    for (Line l : type.lines) {
+                        canvas.getChildren().remove(l);
+                    }
+
+                    type.set = false;
+                    // Label label = new Label(entry.getKey());
+                    TextField text = new TextField();
+                    text.setPromptText(entry.getKey());
+                    text.setStyle("-fx-font: 11 arial;");
+                    text.setPrefWidth(60);
+                    // portGrid.setConstraints(label, 0, idx + 1);
+                    portGrid.setConstraints(text, 0, idx + 1);
+                    portGrid.getChildren().addAll(text);
+                    // canvas.getChildren().addAll(border);
+                    lineActualize(1);
+                    idx += 1;
+                    // todo aktualizovat vsetky pozicie ciar v tomto bloku
+                }
+            }
+        });
+    }
+
+    /**
+     * \brief handles drag events from output ports
+     * \param circle node, whic is being connected
+     * \param border Pane containing block scheme
+     * \param canvas global pane for drawing lines
+     * \param type output data structure, which should be linked
+     * \param parent_scheme global scheme for storing visual blocks
+     */
     private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type, Scheme parent_scheme) {
+        
         circle.setOnMousePressed(e -> {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
@@ -42,6 +119,7 @@ public abstract class Block implements BlockInterface {
             type.lines.getLast().setEndX(x + e.getX());
             canvas.getChildren().add(type.lines.getLast());
         });
+        
         circle.setOnMouseDragged(e -> {    
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
@@ -50,10 +128,9 @@ public abstract class Block implements BlockInterface {
                 type.lines.getLast().setEndX(x + e.getX());
                 type.lines.getLast().setEndY(y + e.getY());
             }
-
         });
+        
         circle.setOnMouseReleased(e -> {
-
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             if (!parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type)) {
                 canvas.getChildren().remove(type.lines.getLast());
@@ -62,7 +139,13 @@ public abstract class Block implements BlockInterface {
 
     }
 
-    public InternalWindow constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
+    /**
+     * \brief Function for drawing new interactive visual block
+     * \param cavas space, where is block drawn
+     * \param parent_scheme global scheme for storing visual blocks
+     * \param block_id identifier of current block
+     */
+    public visualBlock constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
         // content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -72,10 +155,11 @@ public abstract class Block implements BlockInterface {
 
         // title bar
         BorderPane titleBar = new BorderPane();
-        titleBar.setStyle("-fx-background-color: green; -fx-padding: 3");
+        titleBar.setStyle("-fx-background-color: #dbeacf; -fx-padding: 3");
         Label label = new Label(this.name);
         titleBar.setLeft(label);
         Button closeButton = new Button("x");
+        closeButton.setStyle("-fx-font: 12 arial;");
         titleBar.setRight(closeButton);
         // title bar + content
         BorderPane windowPane = new BorderPane();
@@ -84,12 +168,17 @@ public abstract class Block implements BlockInterface {
 
         int idx = 0;
         for (Type input : inputs) {
+            GridPane portGrid = new GridPane();
             Circle circle = new Circle(0, 0, 5);
-            GridPane.setConstraints(circle, 0, 2 * idx + 1);
+            portGrid.setConstraints(circle, 0, 0);
+            GridPane.setConstraints(portGrid, 0, 2 * idx + 1);
+            portGrid.getChildren().add(circle);
             Label inputType = new Label(input.name);
+            inputType.setStyle("-fx-font: 12 arial;");
             GridPane.setConstraints(inputType, 0, 2 * idx);
-            grid.getChildren().addAll(circle, inputType);
-            inNodes.add(idx, circle);
+            grid.getChildren().addAll(portGrid, inputType);
+            input.node = circle;
+            setValue(circle, portGrid, canvas, input);
             idx += 1;
         }
 
@@ -99,15 +188,17 @@ public abstract class Block implements BlockInterface {
             GridPane.setConstraints(circle, 1, 2 * idx + 1);
             GridPane.setHalignment(circle, HPos.RIGHT);
             Label outputType = new Label(output.name);
+            outputType.setStyle("-fx-font: 12 arial;");
             GridPane.setConstraints(outputType, 1, 2 * idx);
             grid.getChildren().addAll(circle, outputType);
+            output.node = circle;
             lineFromCircle(circle, windowPane, canvas, output, parent_scheme);
             idx += 1;
         }
         windowPane.setCenter(grid);
 
-        //apply layout to InternalWindow
-        InternalWindow window = new InternalWindow();
+        //apply layout to visualBlock
+        visualBlock window = new visualBlock();
         window.setStyle("-fx-background-color: white");
         window.setRoot(windowPane);
         this.border = windowPane;
@@ -124,9 +215,14 @@ public abstract class Block implements BlockInterface {
         return window;
     }
 
-    public void outConnect (int n, Type out) {
-        this.outputs.get(n).connect(out);
-
+    public void clear() {
+        for (Type output : outputs) {
+            for (Type dstPort : output.dst) {
+                dstPort.set = false;
+            }
+        }
+        this.outputs.clear();
+        this.inputs.clear();
     }
     // propagate outputs to next block
     public void step () {

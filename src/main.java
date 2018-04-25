@@ -58,7 +58,8 @@ public class main extends Application {
         root.getChildren().add(grid);
         root.getChildren().add(canvas);
         // root.getChildren().add(constructWindow());
-        Scene s = new Scene(root, 300, 275);
+        Scene s = new Scene(root, 1024, 768);
+        primaryStage.setTitle("Block editor");
         primaryStage.setScene(s);
         primaryStage.show();
     }

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import javafx.scene.shape.*;
 import javafx.geometry.Bounds;
-
+import javafx.scene.layout.GridPane;
 import block_editor.types.*;
 
 public class Scheme {
@@ -56,7 +56,8 @@ public class Scheme {
         boolean set = false;
         for (Block b : this.blocks) {
             int idx = 0;
-            for (Circle circle : b.inNodes) {
+            for (Type inputType : b.inputs) {
+                Circle circle = inputType.node;
                 Bounds bounds = circle.localToScene(b.border.getBoundsInLocal());
                 double diff_x = x - bounds.getMinX();
                 double diff_y = y - bounds.getMinY();
@@ -64,6 +65,20 @@ public class Scheme {
                     // todo
                     Type dst = b.inputs.get(idx);
                     if (dst.name == srcType.name) {
+                        GridPane grid = (GridPane) circle.getParent();
+                        // removing user inputText if set
+                        LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
+                        for (javafx.scene.Node child : grid.getChildren()) {
+                            // get index from child
+                            Integer columnIndex = grid.getColumnIndex(child);
+                    
+                            if (child != circle) {
+                                nodesToRemove.addLast(child);
+                            }
+                        }
+                        grid.getChildren().removeAll(nodesToRemove);
+                        b.lineActualize(1);
+
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
                         srcType.connect(dst);

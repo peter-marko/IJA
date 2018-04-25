@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
-public class InternalWindow extends Region {
+public class visualBlock extends Region {
 
     private Scheme parent_scheme;
     public void setParentScheme(Scheme new_parent_scheme) {
@@ -113,6 +113,7 @@ public class InternalWindow extends Region {
             System.out.println("Deleting block " + this.getBlockID());
             this.parent_scheme.deleteBlock(this.getBlockID());
             ((Pane) getParent()).getChildren().remove(this);
+            block.clear();
         });
     }
 
