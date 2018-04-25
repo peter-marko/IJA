@@ -91,6 +91,7 @@ public class Scheme {
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
                         srcType.connect(dst);
+                        System.out.println("Connecting to [" + b.getID() + "]");
                         set = true;
                     } else {
                         System.out.println(dst.getName()+" != "+srcType.getName());

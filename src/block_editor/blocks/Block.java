@@ -140,6 +140,7 @@ public abstract class Block implements BlockInterface {
             if (!parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type)) {
                 canvas.getChildren().remove(type.getLines().getLast());
             }
+            System.out.println("Connecting from [" + this.getID() + "]");
         });
 
     }
