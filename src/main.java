@@ -102,7 +102,7 @@ public class main extends Application {
         itemSave.setOnAction(e -> {
             // TODO
             System.out.println("Item Save Clicked");
-            actual_scheme.print();
+            actual_scheme.print(); // print actual scheme (information just for debug)
         });
 
         MenuItem itemSaveAs = new MenuItem("Save as"); // --------------------------------------------------- save as
