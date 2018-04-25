@@ -12,7 +12,7 @@ import block_editor.types.*;
 
 public class Scheme {
     private LinkedList<Block> blocks; // strores block objects (instacies of Block class)
-    private LinkedList<Con> connections; // stores information about which blocks are connectet ot each other
+    private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
 
     public Scheme() {
@@ -21,7 +21,7 @@ public class Scheme {
         this.next_id = 0;
     }
 
-    // increments actual highest ID and retuns new value
+    // increments actual highest ID and returns new value
     public Integer getBlockID() {
         this.next_id++;
         return this.next_id;
@@ -60,7 +60,7 @@ public class Scheme {
         blocks.remove(target);
     }
 
-    public boolean searchBlock(double x, double y, Type srcType) {
+    public Integer searchBlock(double x, double y, Type srcType) {
         Line l = srcType.getLines().getLast();
         boolean set = false;
         for (Block b : this.blocks) {
@@ -91,8 +91,7 @@ public class Scheme {
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
                         srcType.connect(dst);
-                        System.out.println("Connecting to [" + b.getID() + "]");
-                        set = true;
+                        return b.getID();
                     } else {
                         System.out.println(dst.getName()+" != "+srcType.getName());
                     }
@@ -100,7 +99,7 @@ public class Scheme {
                 idx += 1;
             }
         }
-        return set;
+        return -1;
     }
 
     // should be called when line is made between two blocks

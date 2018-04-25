@@ -137,10 +137,14 @@ public abstract class Block implements BlockInterface {
         
         circle.setOnMouseReleased(e -> {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
-            if (!parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type)) {
+            Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type);
+            if (result == -1) {
                 canvas.getChildren().remove(type.getLines().getLast());
             }
-            System.out.println("Connecting from [" + this.getID() + "]");
+            else{
+                parent_scheme.connect(this.getID(), result);
+                System.out.println("Connecting from [" + this.getID() + "] to [" + result + "]");
+            }
         });
 
     }
