@@ -19,22 +19,24 @@ public abstract class Type implements TypeInterface {
     
     public void clearDst() {
         if (!this.lines.isEmpty()) {
-            Type opposite = this.dst.getLast();
-            for (Line currentLine : this.lines) {
-                System.out.println("lines");
-                this.lines.remove(currentLine);
-                opposite.lines.remove(currentLine);
-                ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
-            }
-            opposite.dst.remove(opposite);
-            LinkedList<Line> revLines = opposite.getLines();
-            if (!revLines.isEmpty()) {
-                this.lines.remove(opposite.getLines().getLast());
-            } else {
-                System.out.print("empty\n");
-            }
-            for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
-                entry.setValue(null);
+            // Type opposite = this.dst.getLast();
+            for (Type opposite : this.dst) {
+                for (Line currentLine : this.lines) {
+                    System.out.println("lines");
+                    this.lines.remove(currentLine);
+                    opposite.lines.remove(currentLine);
+                    ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove   (currentLine);
+                }
+                opposite.dst.remove(opposite);
+                LinkedList<Line> revLines = opposite.getLines();
+                if (!revLines.isEmpty()) {
+                    this.lines.remove(opposite.getLines().getLast());
+                } else {
+                    System.out.print("empty\n");
+                }
+                for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
+                    entry.setValue(null);
+                }
             }
         }
     }
