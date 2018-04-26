@@ -15,27 +15,44 @@ public class Scheme {
     private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
 
+    /**
+     * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
+     */
     public Scheme() {
         this.blocks = new LinkedList<Block>();
         this.connections = new LinkedList<Con>();
         this.next_id = 0;
     }
 
-    // increments actual highest ID and returns new value
+    /**
+     * \brief gets new uniqe block ID value in scheme
+     * \return ID value for next block
+     */
     public Integer getBlockID() {
         this.next_id++;
         return this.next_id;
     }
 
+    /**
+     * \brief add new block to scheme
+     * \param block Block class object to store
+     */
     public void addBlock(Block block) {
         this.blocks.add(block);
     }
 
+    /**
+     * \brief reinitializes scheme, all block and connections are deleted and next ID value is 1 again
+     */
     public void clear() {
         this.blocks.clear();
         this.connections.clear();
+        next_id = 0;
     }
 
+    /**
+     * \brief prints actual Scheme state into console
+     */
     public void print() {
         System.out.println("Scheme print:");
         System.out.println("  Blocks:");
@@ -48,6 +65,10 @@ public class Scheme {
         }
     }
 
+    /**
+     * \brief removes block from scheme
+     * \param id ID of block which should be deleted
+     */
     public void deleteBlock(Integer id) {
         Integer i = 0;
         Block target = null;
@@ -61,6 +82,12 @@ public class Scheme {
         blocks.remove(target);
     }
 
+    /**
+     * \brief search block which has port in specified location
+     * \param x,y coordinates where block is supposed to be
+     * \param srcType data type which port should have
+     * \return ID of found block
+     */
     public Integer searchBlock(double x, double y, Type srcType) {
         Line l = srcType.getLines().getLast();
         boolean set = false;
@@ -103,7 +130,11 @@ public class Scheme {
         return -1;
     }
 
-    // should be called when line is made between two blocks
+    /**
+     * \brief stores information about connection into Scheme class
+     * \param srcBlockID ID of source block
+     * \param dstBlockID ID of destination block
+     */
     public void connect(Integer srcBlockID, Integer dstBlockID){
         Con new_con = new Con();
         new_con.src = srcBlockID;
@@ -111,6 +142,10 @@ public class Scheme {
 		this.connections.add(new_con);
     }
 
+    /**
+     * \brief checks if scheme contains cycles - calls recursive function for every block in Scheme
+     * \return true if scheme is ok, false if cycle is detected
+     */
     public boolean checkCycles(){
         for (Block block : this.blocks) {
             if(checkCyclesRecursive(block.getID(), new LinkedList<Integer>()) == false){
@@ -120,6 +155,12 @@ public class Scheme {
         return true;
     }
 
+    /**
+     * \brief checks if actual block was already visited and calls same function for all following blocks
+     * \param blockID ID of actual block
+     * \param visited List containing ID of blocks which was already visited
+     * \return true if everything is ok, false if this block was already visited or if false is returned from following block
+     */
     public boolean checkCyclesRecursive(Integer blockID, LinkedList<Integer> visited){
         System.out.println("cc: (block " + blockID + ")   visited: " + visited);
         if(visited.contains(blockID)){
