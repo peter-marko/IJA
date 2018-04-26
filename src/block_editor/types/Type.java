@@ -16,20 +16,28 @@ public abstract class Type implements TypeInterface {
     protected LinkedList<Type> dst = new LinkedList();   // connected to
     protected Map<String, Double> items = new HashMap<String, Double>();
     
+    
+    public void clear() {
+        if (!this.lines.isEmpty()) {
+            for (Line currentLine : this.lines) {
+                ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
+            }
+            for (Type currentType : this.dst) {
+                currentType.dst.remove(dst);
+                for (Map.Entry<String, Double> entry: currentType.items.entrySet()) {
+                    entry.setValue(null);
+                }
+            }
+
+        }
+    }
     /**
      * \brief Set connection variable dst and checks types
      * \param dst output type, connection to other block
      */
     public void connect (Type dst) {
-        if (dst.set && !dst.lines.isEmpty()) {
-            for (Line currentLine : dst.lines) {
-                ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
-            }
-            for (Type currentType : dst.dst) {
-                currentType.dst.remove(dst);
-            }
-            dst.lines.clear();
-        }
+        if (dst.set)
+            dst.clear();
         this.dst.addLast(dst);
         dst.lines.add(0, this.lines.getLast());
         dst.dst.add(this);
