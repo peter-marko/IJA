@@ -126,5 +126,17 @@ public abstract class Type implements TypeInterface {
     }
     public void putVal(String s) {
         this.items.put(s,null);
-    }   
+    }
+    
+    /**
+     * \brief checks if port has set value
+     * \return true if value is set, false if port value is null 
+     */
+    public boolean isPrepared() {
+        if(this.items.get("simple") != null)
+        {
+            return true;
+        }
+        return false;
+    }
 }

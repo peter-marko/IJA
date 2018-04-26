@@ -154,6 +154,7 @@ public class main extends Application {
         step.setOnAction(e -> {
             // TODO
             System.out.println("Step button");
+            actual_scheme.executeNext();
         });
         GridPane.setConstraints(step, 1, 0);
 

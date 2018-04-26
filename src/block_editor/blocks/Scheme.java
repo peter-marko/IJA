@@ -14,6 +14,8 @@ public class Scheme {
     private LinkedList<Block> blocks; // strores block objects (instacies of Block class)
     private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
+    private LinkedList<Integer> queue; // queue with IDs of not computed blocks
+    private boolean queue_set; // false if queue was not initialized
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -22,6 +24,8 @@ public class Scheme {
         this.blocks = new LinkedList<Block>();
         this.connections = new LinkedList<Con>();
         this.next_id = 0;
+        this.queue = new LinkedList<Integer>();
+        this.queue_set = false;
     }
 
     /**
@@ -48,6 +52,8 @@ public class Scheme {
         this.blocks.clear();
         this.connections.clear();
         next_id = 0;
+        this.queue.clear();
+        this.queue_set = false;
     }
 
     /**
@@ -62,6 +68,12 @@ public class Scheme {
         System.out.println("  Connections:");
         for (Con connection : this.connections) {
             System.out.println("    [" + connection.src + "]---[" + connection.dst + "]");
+        }
+        if(this.queue_set){
+            System.out.println("  Queue: " + this.queue);
+        }
+        else{
+            System.out.println("  Queue not loaded");
         }
     }
 
@@ -79,7 +91,7 @@ public class Scheme {
             }
             i++;
         }
-        blocks.remove(target);
+        this.blocks.remove(target);
     }
 
     /**
@@ -176,6 +188,57 @@ public class Scheme {
             }
         }
         return true;
+    }
+
+    /**
+     * \brief finds block with given ID
+     * \param blockID ID of serched block
+     * \return searched block
+     */
+    public Block getBlockByID(Integer blockID){
+        for (Block block : this.blocks) {
+            if(block.getID() == blockID)
+            {
+                return block;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * \brief loads block IDs to queue
+     */
+    public void loadQueue(){
+        for (Block block : this.blocks) {
+            this.queue.add(block.getID());
+        }
+        this.queue_set = true;
+    }
+
+    /**
+     * \brief finds block with given ID
+     * \param blockID ID of serched block
+     * \return searched block
+     */
+    public void executeNext(){
+        if(this.queue_set == false)
+        {
+            this.loadQueue();
+        }
+        if(this.queue.isEmpty())
+        {
+            System.out.println("All blocks were computed!");
+            return;
+        }
+        Integer act_ID = this.queue.getFirst();
+        this.queue.removeFirst();
+        while(this.getBlockByID(act_ID).isPrepared() == false){// block is not prepared -> move him to the end of queue ant take next one
+            this.queue.addLast(act_ID);
+            act_ID = this.queue.getFirst();
+            this.queue.removeFirst();
+        }
+        System.out.println("Executing block (" + act_ID + ")");
+        this.getBlockByID(act_ID).execute();
     }
 
     //just for encapsulation

@@ -266,4 +266,18 @@ public abstract class Block implements BlockInterface {
     public Integer getID() {
         return this.id;
     }
+
+    /**
+     * \brief checks if block is prepared to computation (has all input ports set)
+     * \return true if block is prepared, false if some input value is missing
+     */
+    public boolean isPrepared() {
+        for (Type input : this.inputs) {
+            if(input.isPrepared() == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
