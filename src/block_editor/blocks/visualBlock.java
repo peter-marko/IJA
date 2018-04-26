@@ -109,11 +109,11 @@ public class visualBlock extends Region {
 
     public void setCloseButton(Button btn, Pane canvas, Block block) {
         btn.setOnAction(event -> {
-            /* remove_lines(canvas, block);
+            /*remove_lines(canvas, block);
             System.out.println("Deleting block " + this.getBlockID());
             this.parent_scheme.deleteBlock(this.getBlockID());
             ((Pane) getParent()).getChildren().remove(this);
-            block.clear(); */
+            block.clear();*/
             block.execute();
         });
     }
