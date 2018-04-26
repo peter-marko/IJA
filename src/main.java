@@ -103,7 +103,6 @@ public class main extends Application {
         itemSave.setOnAction(e -> {
             // TODO
             System.out.println("Item Save Clicked");
-            actual_scheme.print(); // print actual scheme (information just for debug)
         });
 
         MenuItem itemSaveAs = new MenuItem("Save as"); // --------------------------------------------------- save as
@@ -111,8 +110,27 @@ public class main extends Application {
             // TODO
             System.out.println("Item Save as Clicked");
         });
+
+        MenuItem itemPrint = new MenuItem("*Print"); // --------------------------------------------------- *print (debug)
+        itemPrint.setOnAction(e -> {
+            // TODO
+            System.out.println("Item Print Clicked");
+            actual_scheme.print(); // print actual scheme
+        });
+
+        MenuItem itemCheck = new MenuItem("*Check"); // --------------------------------------------------- *check (debug)
+        itemCheck.setOnAction(e -> {
+            // TODO
+            System.out.println("Item Check Clicked");
+            if(actual_scheme.checkCycles()){
+                System.out.println("No cycles detected."); 
+            }
+            else{
+                System.out.println("Cycles check failed!");
+            }
+        });
            
-        menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs);
+        menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs, itemPrint, itemCheck);
 
         MenuItem itemNewDistance2D = new MenuItem("Distance 2D"); // --------------------------------------- distance 2D
         itemNewDistance2D.setOnAction(e -> {

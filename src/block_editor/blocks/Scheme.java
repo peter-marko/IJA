@@ -33,6 +33,7 @@ public class Scheme {
 
     public void clear() {
         this.blocks.clear();
+        this.connections.clear();
     }
 
     public void print() {
@@ -108,6 +109,32 @@ public class Scheme {
         new_con.src = srcBlockID;
         new_con.dst = dstBlockID;
 		this.connections.add(new_con);
+    }
+
+    public boolean checkCycles(){
+        for (Block block : this.blocks) {
+            if(checkCyclesRecursive(block.getID(), new LinkedList<Integer>()) == false){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkCyclesRecursive(Integer blockID, LinkedList<Integer> visited){
+        System.out.println("cc: (block " + blockID + ")   visited: " + visited);
+        if(visited.contains(blockID)){
+            return false;
+        }
+        visited.add(blockID);
+        for (Con connection : this.connections) {
+            if(connection.src == blockID){
+                LinkedList<Integer> new_visited = new LinkedList(visited);
+                if(checkCyclesRecursive(connection.dst, new_visited) == false){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     //just for encapsulation
