@@ -17,18 +17,25 @@ public abstract class Type implements TypeInterface {
     protected Map<String, Double> items = new HashMap<String, Double>();
     
     
-    public void clear() {
+    public void clearDst() {
         if (!this.lines.isEmpty()) {
+            Type opposite = this.dst.getLast();
             for (Line currentLine : this.lines) {
+                System.out.println("lines");
+                this.lines.remove(currentLine);
+                opposite.lines.remove(currentLine);
                 ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
             }
-            for (Type currentType : this.dst) {
-                currentType.dst.remove(dst);
-                for (Map.Entry<String, Double> entry: currentType.items.entrySet()) {
-                    entry.setValue(null);
-                }
+            opposite.dst.remove(opposite);
+            LinkedList<Line> revLines = opposite.getLines();
+            if (!revLines.isEmpty()) {
+                this.lines.remove(opposite.getLines().getLast());
+            } else {
+                System.out.print("empty\n");
             }
-
+            for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
+                entry.setValue(null);
+            }
         }
     }
     /**
@@ -37,7 +44,7 @@ public abstract class Type implements TypeInterface {
      */
     public void connect (Type dst) {
         if (dst.set)
-            dst.clear();
+            dst.clearDst();
         this.dst.addLast(dst);
         dst.lines.add(0, this.lines.getLast());
         dst.dst.add(this);

@@ -55,11 +55,13 @@ public class visualBlock extends Region {
 
     void remove_lines(Pane canvas, Block block) {
         for (Type t : block.inputs) {
-            t.clear();
+            // get opposite port to which is t connected
+            for (Type dst : t.getDst()) {
+                dst.clearDst();
+            }
         }
         for (Type t : block.outputs) {
-            System.out.println("output clear");
-            t.clear();
+            t.clearDst();
         }
     }
     //we can select nodes that react drag event
@@ -100,7 +102,6 @@ public class visualBlock extends Region {
     }
 
     public void setCloseButton(Button btn, Pane canvas, Block block) {
-<<<<<<< HEAD
         btn.setOnMouseClicked(event -> {
             if(event.getButton().equals(javafx.scene.input.MouseButton.PRIMARY)) {
                 remove_lines(canvas, block);
@@ -111,15 +112,6 @@ public class visualBlock extends Region {
             } else {
                 block.execute();
             }
-=======
-        btn.setOnAction(event -> {
-            /*remove_lines(canvas, block);
-            System.out.println("Deleting block " + this.getBlockID());
-            this.parent_scheme.deleteBlock(this.getBlockID());
-            ((Pane) getParent()).getChildren().remove(this);
-            block.clear();*/
-            block.execute();
->>>>>>> b2f7fbe49d4903ef538a84708b3d8338f422fd17
         });
     }
 
