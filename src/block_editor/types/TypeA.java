@@ -3,6 +3,8 @@ public class TypeA extends Type {
 
     public TypeA(String newName) {
         this.name = newName;
+        this.set = false;
+        this.fromUser = false;
         this.putVal("val", 0.0);
     }
 
@@ -16,5 +18,13 @@ public class TypeA extends Type {
             return true;
         }
         return false;
+    }
+
+    /**
+     * \brief sets all values to null
+     */
+    public void deleteValues() {
+        this.items.clear();
+        this.putVal("val");
     }
 }

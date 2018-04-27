@@ -5,6 +5,7 @@ public class TypeSimple extends Type {
     public TypeSimple() {
         this.name = "Simple";
         this.set = false;
+        this.fromUser = false;
         this.putVal("simple");
     }
 
@@ -18,5 +19,13 @@ public class TypeSimple extends Type {
             return true;
         }
         return false;
+    }
+
+    /**
+     * \brief sets all values to null
+     */
+    public void deleteValues() {
+        this.items.clear();
+        this.putVal("simple");
     }
 }

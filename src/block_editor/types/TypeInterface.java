@@ -16,5 +16,5 @@ import block_editor.blocks.*;
     public void step ();
     public LinkedList<Type> getConnection();
     public boolean isPrepared();
-    
+    public void deleteValues();
  }

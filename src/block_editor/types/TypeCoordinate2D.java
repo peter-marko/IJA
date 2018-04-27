@@ -3,6 +3,7 @@ public class TypeCoordinate2D extends Type {
     
     public TypeCoordinate2D() {
         this.set = false;
+        this.fromUser = false;
         this.name = "Coordinate2D";
         this.putVal("x");
         this.putVal("y");
@@ -18,5 +19,14 @@ public class TypeCoordinate2D extends Type {
             return true;
         }
         return false;
+    }
+
+    /**
+     * \brief sets all values to null
+     */
+    public void deleteValues() {
+        this.items.clear();
+        this.putVal("x");
+        this.putVal("y");
     }
 }

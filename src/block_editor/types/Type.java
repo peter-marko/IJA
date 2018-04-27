@@ -11,6 +11,7 @@ import javafx.scene.shape.*;
 public abstract class Type implements TypeInterface {
     protected String name;
     protected boolean set;
+    protected boolean fromUser;
     protected javafx.scene.shape.Circle node;
     protected LinkedList<Line> lines = new LinkedList();
     protected LinkedList<Type> dst = new LinkedList();   // connected to
@@ -95,11 +96,20 @@ public abstract class Type implements TypeInterface {
     public javafx.scene.shape.Circle getNode() {
         return this.node;
     }
-    public void  setNode(javafx.scene.shape.Circle node) {
+    public void setNode(javafx.scene.shape.Circle node) {
         this.node = node;
     }
     public boolean isSet() {
         return this.set;
+    }
+    public boolean isFromUser(){
+        return this.fromUser;
+    }
+    public void setFromUser(){
+        this.fromUser = true;
+    }
+    public void unsetFromUser(){
+        this.fromUser = false;
     }
     public void set(boolean set) {
         this.set = set;

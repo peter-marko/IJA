@@ -72,9 +72,10 @@ public abstract class Block implements BlockInterface {
     private void setValue(Circle circle, GridPane portGrid, Pane canvas, Type type) {
         circle.setOnMouseClicked(e -> {
             if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
-                
+                type.setFromUser();
                 int idx = 1;
                 for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
+
                     // clearing old line if they existed
                     for (Line l : type.getLines()) {
                         canvas.getChildren().remove(l);
@@ -279,5 +280,17 @@ public abstract class Block implements BlockInterface {
             }
         }
         return true;
+    }
+
+    /**
+     * \brief delete values in connected input ports
+     */
+    public void deleteInputValues() {
+        for (Type input : this.inputs) {
+            if(input.isFromUser() == false){
+                input.deleteValues();
+            }
+
+        }
     }
 }

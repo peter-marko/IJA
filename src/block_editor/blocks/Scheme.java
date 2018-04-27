@@ -32,11 +32,11 @@ public class Scheme {
         this.queue_set = false;
 
         this.anyPrepared = new Alert(AlertType.INFORMATION);
-        anyPrepared.setTitle("Block-editor");
+        anyPrepared.setTitle("Block editor");
         anyPrepared.setHeaderText("Any prepared block found!");
         anyPrepared.setContentText("Program can't find block which could be computed. Ensure that every block is connected or has set input value.");
         this.allExecuted = new Alert(AlertType.INFORMATION);
-        allExecuted.setTitle("Block-editor");
+        allExecuted.setTitle("Block editor");
         allExecuted.setHeaderText("All block were successfully computed!");
         allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
     }
@@ -236,6 +236,7 @@ public class Scheme {
         if(this.queue_set == false)
         {
             this.loadQueue();
+            this.resetComputation();
         }
         Integer limit = this.queue.size();
         Integer act_ID = this.queue.getFirst();
@@ -270,7 +271,20 @@ public class Scheme {
      */
     public void executeAll()
     {
+        this.queue.clear();
+        this.queue_set = false;
+        this.resetComputation();
         while(executeNext()) {}
+    }
+
+    /**
+     * \brief reset all computed values
+     */
+    public void resetComputation()
+    {
+        for (Block block : this.blocks) {
+            block.deleteInputValues();
+        }
     }
 
     /**
