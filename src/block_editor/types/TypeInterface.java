@@ -15,5 +15,6 @@ import block_editor.blocks.*;
     public void connect (Type dst);
     public void step ();
     public LinkedList<Type> getConnection();
+    public boolean isPrepared();
     
  }

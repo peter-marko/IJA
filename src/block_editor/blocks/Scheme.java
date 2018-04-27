@@ -228,11 +228,20 @@ public class Scheme {
         if(this.queue.isEmpty())
         {
             System.out.println("All blocks were computed!");
+            this.queue_set = false;
             return;
         }
+        Integer limit = this.queue.size();
         Integer act_ID = this.queue.getFirst();
         this.queue.removeFirst();
         while(this.getBlockByID(act_ID).isPrepared() == false){// block is not prepared -> move him to the end of queue ant take next one
+            limit--;
+            if(limit == 0)
+            {
+                System.out.println("Error - any prepared block!");
+                this.queue.addLast(act_ID);
+                return;
+            }
             this.queue.addLast(act_ID);
             act_ID = this.queue.getFirst();
             this.queue.removeFirst();
