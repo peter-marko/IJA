@@ -163,6 +163,7 @@ public class main extends Application {
         run.setOnAction(e -> {
             // TODO
             System.out.println("Run button");
+            actual_scheme.executeAll();
         });
         GridPane.setConstraints(run, 2, 0);
 

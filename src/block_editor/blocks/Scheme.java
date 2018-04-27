@@ -19,7 +19,7 @@ public class Scheme {
     private LinkedList<Integer> queue; // queue with IDs of not computed blocks
     private boolean queue_set; // false if queue was not initialized
     private Alert anyPrepared; // error mesage when there is no prepared block in scheme
-    private Alert allComputed; // message when all block are computed
+    private Alert allExecuted; // message when all block are computed
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -35,10 +35,10 @@ public class Scheme {
         anyPrepared.setTitle("Block-editor");
         anyPrepared.setHeaderText("Any prepared block found!");
         anyPrepared.setContentText("Program can't find block which could be computed. Ensure that every block is connected or has set input value.");
-        this.allComputed = new Alert(AlertType.INFORMATION);
-        allComputed.setTitle("Block-editor");
-        allComputed.setHeaderText("All block were successfully computed!");
-        allComputed.setContentText("Clicking step button again will start new computation.");
+        this.allExecuted = new Alert(AlertType.INFORMATION);
+        allExecuted.setTitle("Block-editor");
+        allExecuted.setHeaderText("All block were successfully computed!");
+        allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
     }
 
     /**
@@ -229,11 +229,10 @@ public class Scheme {
     }
 
     /**
-     * \brief finds block with given ID
-     * \param blockID ID of serched block
-     * \return searched block
+     * \brief finds next prepared block in queue and execute him
+     * \return true if computation should continue, false if queue is empty (all block were computed) or some value is missing
      */
-    public void executeNext(){
+    public boolean executeNext(){
         if(this.queue_set == false)
         {
             this.loadQueue();
@@ -247,8 +246,8 @@ public class Scheme {
             {
                 System.out.println("Error - any prepared block!");
                 this.queue.addLast(act_ID);
-                anyPrepared.showAndWait().ifPresent(rs -> { if (rs == ButtonType.OK) {} });
-                return;
+                this.msgAnyPrepared();
+                return false;
             }
             this.queue.addLast(act_ID);
             act_ID = this.queue.getFirst();
@@ -259,10 +258,39 @@ public class Scheme {
         if(this.queue.isEmpty())
         {
             System.out.println("All blocks were computed!");
-            allComputed.showAndWait().ifPresent(rs -> { if (rs == ButtonType.OK) {} });
+            this.msgAllExecuted();
             this.queue_set = false;
-            return;
+            return false;
         }
+        return true;
+    }
+
+    /**
+     * \brief executes all blocks in scheme
+     */
+    public void executeAll()
+    {
+        while(executeNext()) {}
+    }
+
+    /**
+     * \brief shows dialog which says that no prepared block was found
+     */
+    public void msgAnyPrepared()
+    {
+        this.anyPrepared.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {}
+        });
+    }
+
+    /**
+     * \brief shows dialog which says that all blocks were executed
+     */
+    public void msgAllExecuted()
+    {
+        this.allExecuted.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {}
+        });
     }
 
     //just for encapsulation
