@@ -3,11 +3,13 @@ package block_editor.blocks;
 import java.io.*;
 import java.util.LinkedList;
 
-import javafx.util.Pair;
+//import javafx.util.Pair;
 
 import javafx.scene.shape.*;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType; 
 import block_editor.types.*;
 
 public class Scheme {
@@ -16,6 +18,8 @@ public class Scheme {
     private Integer next_id; // actual ID value stored
     private LinkedList<Integer> queue; // queue with IDs of not computed blocks
     private boolean queue_set; // false if queue was not initialized
+    private Alert anyPrepared; // error mesage when there is no prepared block in scheme
+    private Alert allComputed; // message when all block are computed
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -26,6 +30,15 @@ public class Scheme {
         this.next_id = 0;
         this.queue = new LinkedList<Integer>();
         this.queue_set = false;
+
+        this.anyPrepared = new Alert(AlertType.INFORMATION);
+        anyPrepared.setTitle("Block-editor");
+        anyPrepared.setHeaderText("Any prepared block found!");
+        anyPrepared.setContentText("Program can't find block which could be computed. Ensure that every block is connected or has set input value.");
+        this.allComputed = new Alert(AlertType.INFORMATION);
+        allComputed.setTitle("Block-editor");
+        allComputed.setHeaderText("All block were successfully computed!");
+        allComputed.setContentText("Clicking step button again will start new computation.");
     }
 
     /**
@@ -225,12 +238,6 @@ public class Scheme {
         {
             this.loadQueue();
         }
-        if(this.queue.isEmpty())
-        {
-            System.out.println("All blocks were computed!");
-            this.queue_set = false;
-            return;
-        }
         Integer limit = this.queue.size();
         Integer act_ID = this.queue.getFirst();
         this.queue.removeFirst();
@@ -240,6 +247,7 @@ public class Scheme {
             {
                 System.out.println("Error - any prepared block!");
                 this.queue.addLast(act_ID);
+                anyPrepared.showAndWait().ifPresent(rs -> { if (rs == ButtonType.OK) {} });
                 return;
             }
             this.queue.addLast(act_ID);
@@ -248,6 +256,13 @@ public class Scheme {
         }
         System.out.println("Executing block (" + act_ID + ")");
         this.getBlockByID(act_ID).execute();
+        if(this.queue.isEmpty())
+        {
+            System.out.println("All blocks were computed!");
+            allComputed.showAndWait().ifPresent(rs -> { if (rs == ButtonType.OK) {} });
+            this.queue_set = false;
+            return;
+        }
     }
 
     //just for encapsulation
