@@ -11,6 +11,7 @@ import javafx.scene.shape.Line;
 public class visualBlock extends Region {
 
     private Scheme parent_scheme;
+    // Creating scheme for keeping track of currently visible blocks
     public void setParentScheme(Scheme new_parent_scheme) {
         this.parent_scheme = new_parent_scheme;
     }
@@ -27,13 +28,18 @@ public class visualBlock extends Region {
     public void setRoot(Node node) {
         getChildren().add(node);
     }
-
+    // set focus to current visual block
     public void makeFocusable() {
         this.setOnMouseClicked(mouseEvent -> {
             toFront();
         });
     }
-
+    /**
+     * \brief Function used for setting coordinates of lines when visual block changed position
+     * \param block Metadata about currently moved block
+     * \param x_diff X position chage
+     * \param y_diff y position chage
+     */
     void update_lines(Block block, double x_diff, double y_diff) {
         for (Type t : block.inputs) {
             if (t != null && t.getLines() != null) {
@@ -53,7 +59,12 @@ public class visualBlock extends Region {
         }
     }
 
-    void remove_lines(Pane canvas, Block block) {
+    /**
+     * \brief Function for removing connections from block
+     * \param block specifies connection of which block should be cleares
+     */
+    // this function is used when erasing block
+    void remove_lines(Block block) {
         for (Type t : block.inputs) {
             // get opposite port to which is t connected
             for (Type dst : t.getDst()) {
@@ -64,7 +75,12 @@ public class visualBlock extends Region {
             t.clearDst();
         }
     }
-    //we can select nodes that react drag event
+    /**
+     * \brief Implements, that user can drag visualBlock within canvas
+     * \param what Determines which part should react for drag, eg. title_bar, not entire visualBlock
+     * \param canvas Space where is drawn visualWindow, determines boundries even when user expands vindow
+     * \param block Metadata about currently moved block
+     */
     public void makeDragable(Node what, Pane canvas, Block block) {
         final Delta dragDelta = new Delta();
         what.setOnMousePressed(mouseEvent -> {
@@ -101,6 +117,11 @@ public class visualBlock extends Region {
         });
     }
 
+    /**
+     * \brief Funcion sets this button to remove and disconnect, current visualBlock
+     * \param canvas space where is current block located
+     * \param bloc Metadata corresponding to this visualBlock
+     */
     public void setCloseButton(Button btn, Pane canvas, Block block) {
         btn.setOnMouseClicked(event -> {
             if(event.getButton().equals(javafx.scene.input.MouseButton.PRIMARY)) {
@@ -109,7 +130,9 @@ public class visualBlock extends Region {
                 this.parent_scheme.deleteBlock(this.getBlockID());
                 ((Pane) getParent()).getChildren().remove(this);
                 block.clear();
-            } else {
+            } 
+            // temporal part for debugging right click executes window
+            else {
                 block.execute();
             }
         });
