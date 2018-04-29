@@ -21,7 +21,11 @@ public class BlockAdd extends Block {
             System.out.println("propagujem\n");    
             dst.putVal("simple", output);
         }
+        for (Type cur : outputs) {
+            cur.putVal("simple", output);
+        }
         this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
+        this.showValues();
     }
 }

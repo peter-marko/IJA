@@ -104,18 +104,21 @@ public abstract class Type implements TypeInterface {
         t.setLayoutY(0);
         t.setStyle("-fx-background-color: white; -fx-border-color: black;");
         l.setOnMouseEntered(e -> {
-            t.setLayoutX(e.getX()); 
-            t.setLayoutY(e.getY() + 18);
-            String text = new String();
-            for (Map.Entry<String, Double> entry: this.dst.getLast().getItems().entrySet()) {
-                text += entry.getKey();
-                text += " : ";
-                text += entry.getValue();
-                text += "\n";
+            Double diff = l.getStartX() - e.getX();
+            if (diff*diff > 100) {
+                t.setLayoutX(e.getX()); 
+                t.setLayoutY(e.getY() + 18);
+                String text = new String();
+                for (Map.Entry<String, Double> entry: this.dst.getLast().getItems().entrySet()) {
+                    text += entry.getKey();
+                    text += " : ";
+                    text += entry.getValue();
+                    text += ", \n";
+                }
+                t.setText(text);
+                t.setVisible(true);
+                t.toFront();
             }
-            t.setText(text);
-            t.setVisible(true);
-            t.toFront();
         });
         l.setOnMouseExited(e -> {
             t.setVisible(false);

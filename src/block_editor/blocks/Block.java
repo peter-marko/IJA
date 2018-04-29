@@ -40,7 +40,7 @@ public abstract class Block implements BlockInterface {
      */
     public void lineActualize(int pause) {
         if (pause == 1) {
-            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.03));
+            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.05));
             pauseTransition.setOnFinished(event -> lineActualize(0));
             pauseTransition.play();
         }
@@ -73,7 +73,7 @@ public abstract class Block implements BlockInterface {
         circle.setOnMouseClicked(e -> {
             if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
                 type.setFromUser();
-                int idx = 1;
+                int idx = 2;
                 for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
 
                     // clearing old line if they existed
@@ -89,7 +89,7 @@ public abstract class Block implements BlockInterface {
                     text.setPrefWidth(60);
                     // portGrid.setConstraints(label, 0, idx + 1);
                     portGrid.setConstraints(text, 0, idx);
-                    portGrid.getChildren().addAll(text);
+                    portGrid.getChildren().add(text);
                     // canvas.getChildren().addAll(border);
                     lineActualize(1);
                     idx += 1;
@@ -107,6 +107,22 @@ public abstract class Block implements BlockInterface {
         });
     }
 
+    protected void showValues() {
+        int idx = 2;
+        for (Type out : this.outputs) {
+            if (out.getLines().isEmpty()) {
+                GridPane portGrid = (GridPane)out.getNode().getParent();
+                for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
+                    Label text = new Label(entry.getKey()+" : "+entry.getValue());
+                    portGrid.setConstraints(text, 0, idx);
+                    portGrid.getChildren().add(text);
+                }
+            }
+            idx += 1;
+        }
+        this.lineActualize(1);
+    }
+
     /**
      * \brief handles drag events from output ports
      * \param circle node, whic is being connected
@@ -118,10 +134,26 @@ public abstract class Block implements BlockInterface {
     private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type, Scheme parent_scheme) {
         
         circle.setOnMousePressed(e -> {
+            GridPane grid = (GridPane) circle.getParent();
+            LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
+            int i = 0;
+            for (javafx.scene.Node child : grid.getChildren()) {
+                // get index from child
+                Integer columnIndex = grid.getColumnIndex(child);
+        
+                if (child != circle && i > 1) {
+                    nodesToRemove.addLast(child);
+                }
+                i += 1;
+            }
+            grid.getChildren().removeAll(nodesToRemove);
+            if (i > 1) {
+                this.lineActualize(1);
+            }
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
-            javafx.scene.control.Label t = type.addLine(x,y, x + e.getX(), y + e.getY());
+            javafx.scene.control.Label t = type.addLine(x + 5,y, x + e.getX(), y + e.getY());
             type.getLines().getLast().setEndX(x + e.getX());
             canvas.getChildren().addAll(type.getLines().getLast(), t);
         });
@@ -192,13 +224,13 @@ public abstract class Block implements BlockInterface {
         for (Type input : inputs) {
             GridPane portGrid = new GridPane();
             Circle circle = new Circle(0, 0, 5);
-            portGrid.setConstraints(circle, 0, 0);
-            GridPane.setConstraints(portGrid, 0, 2 * idx + 1);
-            portGrid.getChildren().add(circle);
             Label inputType = new Label(input.getName());
             inputType.setStyle("-fx-font: 12 arial;");
-            GridPane.setConstraints(inputType, 0, 2 * idx);
-            grid.getChildren().addAll(portGrid, inputType);
+            portGrid.getChildren().addAll(circle, inputType);
+            portGrid.setConstraints(inputType, 0, 0);
+            portGrid.setConstraints(circle, 0, 1);
+            GridPane.setConstraints(portGrid, 0, idx);
+            grid.getChildren().addAll(portGrid);
             input.setNode(circle);
             setValue(circle, portGrid, canvas, input);
             idx += 1;
@@ -206,13 +238,17 @@ public abstract class Block implements BlockInterface {
 
         idx = 0;
         for (Type output : outputs) {
+            GridPane portGrid = new GridPane();
             Circle circle = new Circle(0, 0, 5);
-            GridPane.setConstraints(circle, 1, 2 * idx + 1);
-            GridPane.setHalignment(circle, HPos.RIGHT);
             Label outputType = new Label(output.getName());
             outputType.setStyle("-fx-font: 12 arial;");
-            GridPane.setConstraints(outputType, 1, 2 * idx);
-            grid.getChildren().addAll(circle, outputType);
+            portGrid.setConstraints(outputType, 0, 0);
+            portGrid.setHalignment(circle, HPos.RIGHT);
+            portGrid.setConstraints(circle, 0, 1);
+            portGrid.getChildren().addAll(circle, outputType);
+            GridPane.setConstraints(portGrid, 1, idx);
+
+            grid.getChildren().addAll(portGrid);
             output.setNode(circle);
             lineFromCircle(circle, windowPane, canvas, output, parent_scheme);
             idx += 1;
@@ -270,6 +306,10 @@ public abstract class Block implements BlockInterface {
 
     public Type getInputPort(int n) {
         return this.inputs.get(n);
+    }
+
+    public LinkedList<Type> getInputs() {
+        return this.inputs;
     }
 
     public String getName() {

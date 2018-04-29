@@ -19,7 +19,11 @@ public class BlockDistance2D extends Block {
         for (Type dst : outputs.get(0).getDst()) {
             dst.putVal("simple", output);
         }
+        for (Type cur : outputs) {
+            cur.putVal("simple", output);
+        }
         this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
+        this.showValues();
     }
 }

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import javafx.scene.shape.*;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType; 
 import block_editor.types.*;
@@ -62,6 +63,14 @@ public class Scheme {
      * \brief reinitializes scheme, all block and connections are deleted and next ID value is 1 again
      */
     public void clear() {
+        for (Block b : this.blocks) {
+            for (Type t : b.getInputs()) {
+                for (Line l : t.getLines()) {
+                    // canvas.getChildren().remove(l);
+                    ((Pane) l.getParent()).getChildren().remove(l);
+                }
+            }
+        }
         this.blocks.clear();
         this.connections.clear();
         next_id = 0;
@@ -130,13 +139,15 @@ public class Scheme {
                         GridPane grid = (GridPane) circle.getParent();
                         // removing user inputText if set
                         LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
+                        int i = 0;
                         for (javafx.scene.Node child : grid.getChildren()) {
                             // get index from child
                             Integer columnIndex = grid.getColumnIndex(child);
                     
-                            if (child != circle) {
+                            if (child != circle && i > 1) {
                                 nodesToRemove.addLast(child);
                             }
+                            i += 1;
                         }
                         grid.getChildren().removeAll(nodesToRemove);
                         b.lineActualize(1);
@@ -217,7 +228,7 @@ public class Scheme {
         }
         return null;
     }
-
+    
     /**
      * \brief loads block IDs to queue
      */
