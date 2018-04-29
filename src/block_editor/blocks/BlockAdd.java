@@ -1,5 +1,6 @@
 package block_editor.blocks;
 
+import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;
 public class BlockAdd extends Block {
@@ -20,6 +21,7 @@ public class BlockAdd extends Block {
             System.out.println("propagujem\n");    
             dst.putVal("simple", output);
         }
+        this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
     }
 }
