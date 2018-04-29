@@ -148,7 +148,7 @@ public class Scheme {
 
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
-                        srcType.connect(dst);
+                        srcType.connect(dst, b.getID());
                         // connect and unconnect
                         return b.getID();
                     } else {
@@ -215,10 +215,21 @@ public class Scheme {
             return false;
         }
         visited.add(blockID);
-        for (Con connection : this.connections) {
+
+        /*for (Con connection : this.connections) {
             if(connection.src == blockID){
                 LinkedList<Integer> new_visited = new LinkedList(visited);
                 if(checkCyclesRecursive(connection.dst, new_visited) == false){
+                    return false;
+                }
+            }
+        }*/
+
+        for(Type output : this.getBlockByID(blockID).outputs)
+        {
+            if(output.getDstID() != -1) {
+                LinkedList<Integer> new_visited = new LinkedList(visited);
+                if(checkCyclesRecursive(output.getDstID(), new_visited) == false){
                     return false;
                 }
             }

@@ -12,7 +12,7 @@ import block_editor.blocks.*;
     public String getName();
     public double getVal(String s);
     public void putVal(String s, double val);
-    public void connect (Type dst);
+    public void connect (Type dst, Integer dst_block_id);
     public void step ();
     public LinkedList<Type> getConnection();
     public boolean isPrepared();

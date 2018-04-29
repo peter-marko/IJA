@@ -1,12 +1,13 @@
 package block_editor.types;
 public class TypeCoordinate2D extends Type {
     
-    public TypeCoordinate2D() {
+    public TypeCoordinate2D(Integer block_id) {
         this.set = false;
         this.fromUser = false;
         this.name = "Coordinate2D";
         this.putVal("x");
         this.putVal("y");
+        this.ID = block_id;
     }
 
     /**

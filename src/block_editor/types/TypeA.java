@@ -1,11 +1,12 @@
 package block_editor.types;
 public class TypeA extends Type {
 
-    public TypeA(String newName) {
-        this.name = newName;
+    public TypeA(Integer block_id) {
+        this.name = "A";
         this.set = false;
         this.fromUser = false;
         this.putVal("val", 0.0);
+        this.ID = block_id;
     }
 
     /**
