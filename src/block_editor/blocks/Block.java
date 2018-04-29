@@ -380,4 +380,8 @@ public abstract class Block implements BlockInterface {
             }
         }
     }
+
+    public LinkedList<Integer> getConnections(){
+        return this.outputs.getFirst().getAllDstID();
+    }
 }
