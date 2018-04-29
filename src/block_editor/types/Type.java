@@ -23,28 +23,30 @@ public abstract class Type implements TypeInterface {
     protected Map<String, Double> items = new HashMap<String, Double>();
     
     
-    public void clearDst() {
+    public void clearDst(Type type) {
         if (!this.lines.isEmpty()) {
             // Type opposite = this.dst.getLast();
-            for (Type opposite : this.dst) {
-                for (Line currentLine : this.lines) {
-                    System.out.println("lines");
-                    this.lines.remove(currentLine);
-                    opposite.lines.remove(currentLine);
-                    ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
-                }
-                this.dstID.remove(opposite.ID);// removes dstID of opposite
-                opposite.dst.remove(opposite);
+            Iterator<Type> iter = this.dst.iterator();
+            while (iter.hasNext()) {
+                Type opposite = iter.next();
+                if (type != null && type != opposite)
+                    continue;
                 LinkedList<Line> revLines = opposite.getLines();
                 if (!revLines.isEmpty()) {
-                    this.lines.remove(opposite.getLines().getLast());
+                    Line oppLine = opposite.getLines().getLast();
+                    this.lines.remove(oppLine);
+                    opposite.lines.remove(oppLine);
+                    ((javafx.scene.layout.Pane) oppLine.getParent()).getChildren().remove(oppLine);
                 } else {
                     System.out.print("empty\n");
                 }
+                this.dstID.remove(opposite.ID);// removes dstID of opposite
+                opposite.dst.remove(opposite);
                 for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
                     entry.setValue(null);
                 }
             }
+            iter.remove();
         }
     }
     /**
@@ -54,7 +56,7 @@ public abstract class Type implements TypeInterface {
      */
     public void connect (Type dst, Integer dst_block_id) {
         if (dst.set)
-            dst.clearDst();
+            dst.clearDst(null);
         this.dst.addLast(dst);
         this.dstID.addLast(dst_block_id);
         dst.lines.add(0, this.lines.getLast());

@@ -68,11 +68,11 @@ public class visualBlock extends Region {
         for (Type t : block.inputs) {
             // get opposite port to which is t connected
             for (Type dst : t.getDst()) {
-                dst.clearDst();
+                dst.clearDst(t);
             }
         }
         for (Type t : block.outputs) {
-            t.clearDst();
+            t.clearDst(null);
         }
     }
     /**

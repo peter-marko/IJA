@@ -18,13 +18,13 @@ import javafx.scene.paint.Color;
 import javafx.geometry.Bounds;
 import java.util.Optional;
 import java.util.Map;
-
 import java.awt.Point;
 import java.beans.IndexedPropertyChangeEvent;
 import java.awt.MouseInfo;
 import java.util.LinkedList;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import java.text.DecimalFormat;
 import block_editor.types.*;
 
 public abstract class Block implements BlockInterface {
@@ -116,7 +116,8 @@ public abstract class Block implements BlockInterface {
                 GridPane portGrid = (GridPane)out.getNode().getParent();
                 for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
                     removeGridVals(portGrid);
-                    Label text = new Label(entry.getKey()+" : "+entry.getValue());
+                    DecimalFormat df = new DecimalFormat("#.####");
+                    Label text = new Label(entry.getKey()+" : "+df.format(entry.getValue()));
                     portGrid.setConstraints(text, 0, idx);
                     portGrid.getChildren().add(text);
                 }
@@ -195,11 +196,13 @@ public abstract class Block implements BlockInterface {
         circle.setOnMouseReleased(e -> {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type);
-            if (result == -1) {
+            if (result < 0) {
                 removeIncompleteLine(type, canvas);
+            }
+            if (result == -1) {
                 parent_scheme.msgTypeError();
             }
-            else{
+            else if (result >= 0) {
                 if (parent_scheme.connect(this.getID(), result) == false) {
                     removeIncompleteLine(type, canvas);
                     parent_scheme.msgCycleFound();
@@ -210,11 +213,16 @@ public abstract class Block implements BlockInterface {
 
     }
 
+    /**
+     * \brief Function for setting shadow of visual window
+     * \param color if null offset set to 0 and clorBlack
+     */
     public void setShadow(Color color) {
         DropShadow ds = new DropShadow();
         if (color == null) {
-            ds.setOffsetY(0);
-            ds.setOffsetX(0);
+            color = Color.GRAY;
+            ds.setOffsetY(1);
+            ds.setOffsetX(1);
         } else {
             ds.setOffsetY(3.0);
             ds.setOffsetX(3.0);

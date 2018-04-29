@@ -157,13 +157,13 @@ public class Scheme {
                         return b.getID();
                     } else {
                         msgTypeErrorSet("Types '"+dst.getName()+"' and '"+srcType.getName()+"' are not compatible");
-                        break;
+                        return -1;
                     }
                 }
                 idx += 1;
             }
         }
-        return -1;
+        return -2;
     }
 
     /**
