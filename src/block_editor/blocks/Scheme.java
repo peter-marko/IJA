@@ -44,8 +44,8 @@ public class Scheme {
         allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
         this.cycleFound = new Alert(AlertType.INFORMATION);
         cycleFound.setTitle("Block editor");
-        cycleFound.setHeaderText("Cycle was detected!");
-        cycleFound.setContentText("Creating this connection made a cycle in scheme.");
+        cycleFound.setHeaderText("Connection was not made!");
+        cycleFound.setContentText("Connecting these blocks causes a cycle in scheme.");
         this.typeError = new Alert(AlertType.INFORMATION);
         typeError.setTitle("Block editor");
         typeError.setHeaderText("Type error");
