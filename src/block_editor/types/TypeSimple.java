@@ -2,11 +2,12 @@ package block_editor.types;
 // one dimensional coordinate
 public class TypeSimple extends Type {
     
-    public TypeSimple() {
+    public TypeSimple(Integer block_id) {
         this.name = "Simple";
         this.set = false;
         this.fromUser = false;
         this.putVal("simple");
+        this.ID = block_id;
     }
 
     /**

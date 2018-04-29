@@ -15,11 +15,11 @@ import javafx.scene.layout.GridPane;
 
 import block_editor.types.*;
 public class Block1 extends Block {
-    public Block1 (String newName) {
+    public Block1 (String newName, Integer newID) {
         this.name = newName;
-        this.outputs.add(new TypeA ("out"));
-        this.inputs.add(new TypeA("in1"));
-        this.inputs.add(new TypeA("in2"));
+        this.outputs.add(new TypeA(newID));
+        this.inputs.add(new TypeA(newID));
+        this.inputs.add(new TypeA(newID));
     }
 
     public void execute () {

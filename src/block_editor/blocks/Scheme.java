@@ -21,6 +21,7 @@ public class Scheme {
     private boolean queue_set; // false if queue was not initialized
     private Alert anyPrepared; // error mesage when there is no prepared block in scheme
     private Alert allExecuted; // message when all block are computed
+    private Alert cycleFound; // message when cycle is detected
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -40,6 +41,10 @@ public class Scheme {
         allExecuted.setTitle("Block editor");
         allExecuted.setHeaderText("All block were successfully computed!");
         allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
+        this.cycleFound = new Alert(AlertType.INFORMATION);
+        cycleFound.setTitle("Block editor");
+        cycleFound.setHeaderText("Cycle was detected!");
+        cycleFound.setContentText("Creating this connection made a cycle in scheme.");
     }
 
     /**
@@ -154,7 +159,8 @@ public class Scheme {
 
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
-                        srcType.connect(dst);
+                        srcType.connect(dst, b.getID());
+                        // connect and unconnect
                         return b.getID();
                     } else {
                         System.out.println(dst.getName()+" != "+srcType.getName());
@@ -175,7 +181,23 @@ public class Scheme {
         Con new_con = new Con();
         new_con.src = srcBlockID;
         new_con.dst = dstBlockID;
-		this.connections.add(new_con);
+        this.connections.add(new_con);
+        this.checkCycles();// check cycles after every new connection
+    }
+
+    /**
+     * \brief deletes connection between two blocks
+     * \param srcBlockID ID of source block
+     * \param dstBlockID ID of destination block
+     */
+    public void unconnect(Integer srcBlockID, Integer dstBlockID){
+        for (Con connection : this.connections) {
+            if(connection.src == srcBlockID && connection.dst == dstBlockID)
+            {
+                this.connections.remove(connection);
+                return;
+            }
+        }
     }
 
     /**
@@ -185,6 +207,7 @@ public class Scheme {
     public boolean checkCycles(){
         for (Block block : this.blocks) {
             if(checkCyclesRecursive(block.getID(), new LinkedList<Integer>()) == false){
+                this.msgCycleFound();
                 return false;
             }
         }
@@ -203,10 +226,21 @@ public class Scheme {
             return false;
         }
         visited.add(blockID);
-        for (Con connection : this.connections) {
+
+        /*for (Con connection : this.connections) {
             if(connection.src == blockID){
                 LinkedList<Integer> new_visited = new LinkedList(visited);
                 if(checkCyclesRecursive(connection.dst, new_visited) == false){
+                    return false;
+                }
+            }
+        }*/
+
+        for(Type output : this.getBlockByID(blockID).outputs)
+        {
+            if(output.getDstID() != -1) {
+                LinkedList<Integer> new_visited = new LinkedList(visited);
+                if(checkCyclesRecursive(output.getDstID(), new_visited) == false){
                     return false;
                 }
             }
@@ -315,6 +349,16 @@ public class Scheme {
     public void msgAllExecuted()
     {
         this.allExecuted.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {}
+        });
+    }
+
+    /**
+     * \brief shows dialog which says that connection was not made due to cycle
+     */
+    public void msgCycleFound()
+    {
+        this.cycleFound.showAndWait().ifPresent(rs -> {
             if (rs == ButtonType.OK) {}
         });
     }

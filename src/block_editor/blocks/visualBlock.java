@@ -64,7 +64,7 @@ public class visualBlock extends Region {
      * \param block specifies connection of which block should be cleares
      */
     // this function is used when erasing block
-    void remove_lines(Block block) {
+    public void remove_lines(Block block) {
         for (Type t : block.inputs) {
             // get opposite port to which is t connected
             for (Type dst : t.getDst()) {

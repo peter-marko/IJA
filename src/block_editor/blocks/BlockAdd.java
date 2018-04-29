@@ -7,9 +7,9 @@ public class BlockAdd extends Block {
     public BlockAdd (String newName, Integer newID) {
         this.name = newName;
         this.id = newID;
-        this.inputs.add(new TypeSimple());
-        this.inputs.add(new TypeSimple());
-        this.outputs.add(new TypeSimple());
+        this.inputs.add(new TypeSimple(newID));
+        this.inputs.add(new TypeSimple(newID));
+        this.outputs.add(new TypeSimple(newID));
     }
     public void execute () {
         Type i1 = inputs.get(0);

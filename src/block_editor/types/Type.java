@@ -18,6 +18,8 @@ public abstract class Type implements TypeInterface {
     protected javafx.scene.shape.Circle node;
     protected LinkedList<Line> lines = new LinkedList();
     protected LinkedList<Type> dst = new LinkedList();   // connected to
+    protected Integer ID; // ID of source block
+    protected LinkedList<Integer> dstID = new LinkedList(); // ID of connected block
     protected Map<String, Double> items = new HashMap<String, Double>();
     
     
@@ -31,6 +33,7 @@ public abstract class Type implements TypeInterface {
                     opposite.lines.remove(currentLine);
                     ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
                 }
+                this.dstID.remove(opposite.ID);// removes dstID of opposite
                 opposite.dst.remove(opposite);
                 LinkedList<Line> revLines = opposite.getLines();
                 if (!revLines.isEmpty()) {
@@ -47,11 +50,13 @@ public abstract class Type implements TypeInterface {
     /**
      * \brief Set connection variable dst and checks types
      * \param dst output type, connection to other block
+     * \param dst_block_id ID of block to which is port connected
      */
-    public void connect (Type dst) {
+    public void connect (Type dst, Integer dst_block_id) {
         if (dst.set)
             dst.clearDst();
         this.dst.addLast(dst);
+        this.dstID.addLast(dst_block_id);
         dst.lines.add(0, this.lines.getLast());
         dst.dst.add(this);
         dst.set = true;
@@ -169,5 +174,11 @@ public abstract class Type implements TypeInterface {
     }
     public void putVal(String s) {
         this.items.put(s,null);
+    }
+    public Integer getDstID() {
+        if(this.dstID.isEmpty()){
+            return -1;
+        }
+        return this.dstID.getFirst();
     }
 }

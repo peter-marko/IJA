@@ -129,8 +129,15 @@ public class main extends Application {
                 System.out.println("Cycles check failed!");
             }
         });
+
+        MenuItem itemRm = new MenuItem("*rm 2 1"); // --------------------------------------------------- *rm 2 1 (debug)
+        itemRm.setOnAction(e -> {
+            // TODO
+            System.out.println("Item rm 2 1 Clicked");
+            actual_scheme.unconnect(2,1);
+        });
            
-        menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs, itemPrint, itemCheck);
+        menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs, itemPrint, itemCheck, itemRm);
 
         MenuItem itemNewDistance2D = new MenuItem("Distance 2D"); // --------------------------------------- distance 2D
         itemNewDistance2D.setOnAction(e -> {
