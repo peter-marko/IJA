@@ -121,9 +121,9 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
-            type.addLine(x,y, x + e.getX(), y + e.getY());
+            javafx.scene.control.Label t = type.addLine(x,y, x + e.getX(), y + e.getY());
             type.getLines().getLast().setEndX(x + e.getX());
-            canvas.getChildren().add(type.getLines().getLast());
+            canvas.getChildren().addAll(type.getLines().getLast(), t);
         });
         
         circle.setOnMouseDragged(e -> {    
@@ -150,6 +150,18 @@ public abstract class Block implements BlockInterface {
 
     }
 
+    public void setShadow(Color color) {
+        DropShadow ds = new DropShadow();
+        if (color == null) {
+            ds.setOffsetY(0);
+            ds.setOffsetX(0);
+        } else {
+            ds.setOffsetY(3.0);
+            ds.setOffsetX(3.0);
+        }
+        ds.setColor(color);
+        this.border.getParent().setEffect(ds);
+    }
     /**
      * \brief Function for drawing new interactive visual block
      * \param cavas space, where is block drawn
@@ -162,7 +174,6 @@ public abstract class Block implements BlockInterface {
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
         grid.setHgap(10);
-
 
         // title bar
         BorderPane titleBar = new BorderPane();
@@ -222,6 +233,7 @@ public abstract class Block implements BlockInterface {
 
         window.setParentScheme(parent_scheme);
         window.setBlockID(block_id);
+        this.setShadow(null);
 
         return window;
     }

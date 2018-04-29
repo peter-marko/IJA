@@ -1,5 +1,6 @@
 package block_editor.blocks;
 
+import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;
 public class BlockDistance2D extends Block {
@@ -18,6 +19,7 @@ public class BlockDistance2D extends Block {
         for (Type dst : outputs.get(0).getDst()) {
             dst.putVal("simple", output);
         }
+        this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
     }
 }

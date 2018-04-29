@@ -97,7 +97,7 @@ public class visualBlock extends Region {
             double max_y = canvas.getHeight() - getHeight() - 40;
             double final_x, final_y;
             if (next_x < 0) {
-                final_x = 0;
+               final_x = 0;
             } else if (next_x > max_x) {
                 final_x = max_x;
             } else {
@@ -125,7 +125,7 @@ public class visualBlock extends Region {
     public void setCloseButton(Button btn, Pane canvas, Block block) {
         btn.setOnMouseClicked(event -> {
             if(event.getButton().equals(javafx.scene.input.MouseButton.PRIMARY)) {
-                remove_lines(canvas, block);
+                remove_lines(block);
                 System.out.println("Deleting block " + this.getBlockID());
                 this.parent_scheme.deleteBlock(this.getBlockID());
                 ((Pane) getParent()).getChildren().remove(this);

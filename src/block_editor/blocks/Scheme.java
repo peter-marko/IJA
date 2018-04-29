@@ -283,6 +283,7 @@ public class Scheme {
     public void resetComputation()
     {
         for (Block block : this.blocks) {
+            block.setShadow(null);
             block.deleteInputValues();
         }
     }

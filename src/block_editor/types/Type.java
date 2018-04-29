@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Iterator;
 import java.util.Map;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
+import javafx.scene.*;
 import block_editor.blocks.*;
 import javafx.scene.shape.*;
 
@@ -26,7 +29,7 @@ public abstract class Type implements TypeInterface {
                     System.out.println("lines");
                     this.lines.remove(currentLine);
                     opposite.lines.remove(currentLine);
-                    ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove   (currentLine);
+                    ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
                 }
                 opposite.dst.remove(opposite);
                 LinkedList<Line> revLines = opposite.getLines();
@@ -90,8 +93,35 @@ public abstract class Type implements TypeInterface {
     public LinkedList<Line> getLines() {
         return this.lines;
     }
-    public void addLine(double x1, double y1, double x2, double y2) {
-        this.lines.addLast(new Line(x1, y1, x2, y2));
+    public Label addLine(double x1, double y1, double x2, double y2) {
+        Line l = new Line(x1, y1, x2, y2);
+        l.setStrokeWidth(3);
+        // l.setStyle("-fx-border-width: 10px");
+        Label t = new Label();
+        // position of the text 
+        t.setVisible(false);
+        t.setLayoutX(0);
+        t.setLayoutY(0);
+        t.setStyle("-fx-background-color: white; -fx-border-color: black;");
+        l.setOnMouseEntered(e -> {
+            t.setLayoutX(e.getX()); 
+            t.setLayoutY(e.getY() + 18);
+            String text = new String();
+            for (Map.Entry<String, Double> entry: this.dst.getLast().getItems().entrySet()) {
+                text += entry.getKey();
+                text += " : ";
+                text += entry.getValue();
+                text += "\n";
+            }
+            t.setText(text);
+            t.setVisible(true);
+            t.toFront();
+        });
+        l.setOnMouseExited(e -> {
+            t.setVisible(false);
+        });
+        this.lines.addLast(l);
+        return t;
     }
     public javafx.scene.shape.Circle getNode() {
         return this.node;
