@@ -48,7 +48,7 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = type.getNode().localToScene(this.border.getBoundsInLocal());
             if (!inputs.isEmpty()) {
                 for (Line l : type.getLines()) {
-                    l.setEndX(boundsInBorder.getMinX());
+                    l.setEndX(boundsInBorder.getMinX() - 5);
                     l.setEndY(boundsInBorder.getMinY());
                 }
             }
@@ -56,7 +56,7 @@ public abstract class Block implements BlockInterface {
         for (Type type : outputs) {
             Bounds boundsInBorder = type.getNode().localToScene(this.border.getBoundsInLocal());
             for (Line l : type.getLines()) {
-                l.setStartX(boundsInBorder.getMinX());
+                l.setStartX(boundsInBorder.getMinX() + 5);
                 l.setStartY(boundsInBorder.getMinY());
             }
         }
@@ -106,13 +106,16 @@ public abstract class Block implements BlockInterface {
             }
         });
     }
-
+    /**
+     * \brief Function shows final output of calculation, if port not connected
+     */
     protected void showValues() {
         int idx = 2;
         for (Type out : this.outputs) {
             if (out.getLines().isEmpty()) {
                 GridPane portGrid = (GridPane)out.getNode().getParent();
                 for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
+                    removeGridVals(portGrid);
                     Label text = new Label(entry.getKey()+" : "+entry.getValue());
                     portGrid.setConstraints(text, 0, idx);
                     portGrid.getChildren().add(text);
@@ -123,6 +126,38 @@ public abstract class Block implements BlockInterface {
         this.lineActualize(1);
     }
 
+    /**
+     * \brief Removes line if error happened, or connection unsuccessful
+     * \param type Source type of line/connection
+     * \param cnvas Pane containing line objects
+     */
+    private void removeIncompleteLine(Type type, Pane canvas) {
+        Line l = type.getLines().getLast();
+        canvas.getChildren().remove(l);
+        type.getLines().removeLast();
+    }
+
+    /**
+     * \brief Removes output or input labels with index higher than 1
+     * because first label is type name, second is port node/circle
+     * \param grid gridpain, which can contain unwanted labels
+     */
+    public int removeGridVals(GridPane grid) {
+        int i = 0;
+        LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
+
+        for (javafx.scene.Node child : grid.getChildren()) {
+            // get index from child
+            Integer columnIndex = grid.getColumnIndex(child);
+    
+            if (i > 1) {
+                nodesToRemove.addLast(child);
+            }
+            i += 1;
+        }
+        grid.getChildren().removeAll(nodesToRemove);
+        return i;
+    }
     /**
      * \brief handles drag events from output ports
      * \param circle node, whic is being connected
@@ -135,19 +170,8 @@ public abstract class Block implements BlockInterface {
         
         circle.setOnMousePressed(e -> {
             GridPane grid = (GridPane) circle.getParent();
-            LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
-            int i = 0;
-            for (javafx.scene.Node child : grid.getChildren()) {
-                // get index from child
-                Integer columnIndex = grid.getColumnIndex(child);
-        
-                if (child != circle && i > 1) {
-                    nodesToRemove.addLast(child);
-                }
-                i += 1;
-            }
-            grid.getChildren().removeAll(nodesToRemove);
-            if (i > 1) {
+
+            if (removeGridVals(grid) > 1) {
                 this.lineActualize(1);
             }
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
@@ -172,10 +196,14 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type);
             if (result == -1) {
-                canvas.getChildren().remove(type.getLines().getLast());
+                removeIncompleteLine(type, canvas);
+                parent_scheme.msgTypeError();
             }
             else{
-                parent_scheme.connect(this.getID(), result);
+                if (parent_scheme.connect(this.getID(), result) == false) {
+                    removeIncompleteLine(type, canvas);
+                    parent_scheme.msgCycleFound();
+                }
                 System.out.println("Connecting from [" + this.getID() + "] to [" + result + "]");
             }
         });

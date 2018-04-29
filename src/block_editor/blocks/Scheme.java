@@ -22,6 +22,7 @@ public class Scheme {
     private Alert anyPrepared; // error mesage when there is no prepared block in scheme
     private Alert allExecuted; // message when all block are computed
     private Alert cycleFound; // message when cycle is detected
+    private Alert typeError; // message when incompatible types connection attempt
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -45,6 +46,9 @@ public class Scheme {
         cycleFound.setTitle("Block editor");
         cycleFound.setHeaderText("Cycle was detected!");
         cycleFound.setContentText("Creating this connection made a cycle in scheme.");
+        this.typeError = new Alert(AlertType.INFORMATION);
+        typeError.setTitle("Block editor");
+        typeError.setHeaderText("Type error");
     }
 
     /**
@@ -137,33 +141,23 @@ public class Scheme {
                 Bounds bounds = circle.localToScene(b.getBorder().getBoundsInLocal());
                 double diff_x = x - bounds.getMinX();
                 double diff_y = y - bounds.getMinY();
-                if (diff_x*diff_x + diff_y*diff_y < 25) {
+                if (diff_x*diff_x + diff_y*diff_y < 200) {
                     // todo
                     Type dst = b.inputs.get(idx);
                     if (dst.getName() == srcType.getName()) {
                         GridPane grid = (GridPane) circle.getParent();
                         // removing user inputText if set
-                        LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
-                        int i = 0;
-                        for (javafx.scene.Node child : grid.getChildren()) {
-                            // get index from child
-                            Integer columnIndex = grid.getColumnIndex(child);
-                    
-                            if (child != circle && i > 1) {
-                                nodesToRemove.addLast(child);
-                            }
-                            i += 1;
-                        }
-                        grid.getChildren().removeAll(nodesToRemove);
+                        b.removeGridVals(grid);
                         b.lineActualize(1);
 
-                        l.setEndX(bounds.getMinX());
+                        l.setEndX(bounds.getMinX() - 5);
                         l.setEndY(bounds.getMinY());
                         srcType.connect(dst, b.getID());
                         // connect and unconnect
                         return b.getID();
                     } else {
-                        System.out.println(dst.getName()+" != "+srcType.getName());
+                        msgTypeErrorSet("Types '"+dst.getName()+"' and '"+srcType.getName()+"' are not compatible");
+                        break;
                     }
                 }
                 idx += 1;
@@ -176,13 +170,19 @@ public class Scheme {
      * \brief stores information about connection into Scheme class
      * \param srcBlockID ID of source block
      * \param dstBlockID ID of destination block
+     * \return true on success, false otherwise
      */
-    public void connect(Integer srcBlockID, Integer dstBlockID){
+    public Boolean connect(Integer srcBlockID, Integer dstBlockID){
         Con new_con = new Con();
         new_con.src = srcBlockID;
         new_con.dst = dstBlockID;
-        this.connections.add(new_con);
-        this.checkCycles();// check cycles after every new connection
+        this.connections.addLast(new_con);
+        // check cycles after every new connection
+        if (this.checkCycles() == false) {
+            this.connections.removeLast();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -207,7 +207,6 @@ public class Scheme {
     public boolean checkCycles(){
         for (Block block : this.blocks) {
             if(checkCyclesRecursive(block.getID(), new LinkedList<Integer>()) == false){
-                this.msgCycleFound();
                 return false;
             }
         }
@@ -331,6 +330,22 @@ public class Scheme {
             block.setShadow(null);
             block.deleteInputValues();
         }
+    }
+
+    /**
+     * \brief Setting error message when incompatible type connection
+     */
+    public void msgTypeErrorSet(String msgText) {
+        typeError.setContentText(msgText);
+    }
+    /**
+     * \brief shows dialog which says that selected ports cannot be connected because of incompatible types
+     */
+    public void msgTypeError()
+    {
+        this.typeError.showAndWait().ifPresent(rs -> {
+            if (rs == ButtonType.OK) {}
+        });
     }
 
     /**
