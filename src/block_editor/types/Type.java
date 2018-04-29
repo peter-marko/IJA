@@ -29,8 +29,10 @@ public abstract class Type implements TypeInterface {
             Iterator<Type> iter = this.dst.iterator();
             while (iter.hasNext()) {
                 Type opposite = iter.next();
-                if (type != null && type != opposite)
+                if (type != null && type != opposite) {
+                    System.out.println("continue");
                     continue;
+                }
                 LinkedList<Line> revLines = opposite.getLines();
                 if (!revLines.isEmpty()) {
                     Line oppLine = opposite.getLines().getLast();
@@ -45,6 +47,7 @@ public abstract class Type implements TypeInterface {
                 for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
                     entry.setValue(null);
                 }
+                System.out.println("remove");
             }
             iter.remove();
         }
