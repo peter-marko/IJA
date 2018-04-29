@@ -95,11 +95,15 @@ public class Scheme {
         System.out.println("  Blocks:");
         for (Block block : this.blocks) {
             System.out.println("    " + block.getName() + " (" + block.getID() + ")");
+            for (Integer id : block.getConnections()) {
+                System.out.println("        " + id);
+            }
+            //System.out.println("        " + block.outputs.getFirst().getDstID());
         }
-        System.out.println("  Connections:");
+        /*System.out.println("  Connections:");
         for (Con connection : this.connections) {
             System.out.println("    [" + connection.src + "]---[" + connection.dst + "]");
-        }
+        }*/
         if(this.queue_set){
             System.out.println("  Queue: " + this.queue);
         }
@@ -173,13 +177,14 @@ public class Scheme {
      * \return true on success, false otherwise
      */
     public Boolean connect(Integer srcBlockID, Integer dstBlockID){
-        Con new_con = new Con();
-        new_con.src = srcBlockID;
-        new_con.dst = dstBlockID;
-        this.connections.addLast(new_con);
+        //Con new_con = new Con();
+        //new_con.src = srcBlockID;
+        //new_con.dst = dstBlockID;
+        //this.connections.addLast(new_con);
         // check cycles after every new connection
         if (this.checkCycles() == false) {
-            this.connections.removeLast();
+            //this.connections.removeLast();
+            getBlockByID(srcBlockID).getConnections().remove(dstBlockID);// remove information about connection from source port
             return false;
         }
         return true;
@@ -237,11 +242,17 @@ public class Scheme {
 
         for(Type output : this.getBlockByID(blockID).outputs)
         {
-            if(output.getDstID() != -1) {
+            /*if(output.getFirstDstID() != -1) {
                 LinkedList<Integer> new_visited = new LinkedList(visited);
-                if(checkCyclesRecursive(output.getDstID(), new_visited) == false){
+                if(checkCyclesRecursive(output.getFirstDstID(), new_visited) == false){
                     return false;
                 }
+            }*/
+            for (Integer id : output.getAllDstID()) {
+                LinkedList<Integer> new_visited = new LinkedList(visited);
+                if(checkCyclesRecursive(id, new_visited) == false){
+                    return false;
+                }    
             }
         }
         return true;

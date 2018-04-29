@@ -175,10 +175,13 @@ public abstract class Type implements TypeInterface {
     public void putVal(String s) {
         this.items.put(s,null);
     }
-    public Integer getDstID() {
+    public Integer getFirstDstID() {
         if(this.dstID.isEmpty()){
             return -1;
         }
         return this.dstID.getFirst();
+    }
+    public LinkedList<Integer> getAllDstID() {
+        return this.dstID;
     }
 }
