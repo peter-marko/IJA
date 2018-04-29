@@ -290,7 +290,6 @@ public abstract class Block implements BlockInterface {
             if(input.isFromUser() == false){
                 input.deleteValues();
             }
-
         }
     }
 }

@@ -144,6 +144,7 @@ public class Scheme {
                         l.setEndX(bounds.getMinX());
                         l.setEndY(bounds.getMinY());
                         srcType.connect(dst);
+                        // connect and unconnect
                         return b.getID();
                     } else {
                         System.out.println(dst.getName()+" != "+srcType.getName());
@@ -165,6 +166,21 @@ public class Scheme {
         new_con.src = srcBlockID;
         new_con.dst = dstBlockID;
 		this.connections.add(new_con);
+    }
+
+    /**
+     * \brief deletes connection between two blocks
+     * \param srcBlockID ID of source block
+     * \param dstBlockID ID of destination block
+     */
+    public void unconnect(Integer srcBlockID, Integer dstBlockID){
+        for (Con connection : this.connections) {
+            if(connection.src == srcBlockID && connection.dst == dstBlockID)
+            {
+                this.connections.remove(connection);
+                return;
+            }
+        }
     }
 
     /**
