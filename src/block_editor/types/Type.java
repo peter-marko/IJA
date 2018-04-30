@@ -41,6 +41,7 @@ public abstract class Type implements TypeInterface {
                 if (!revLines.isEmpty()) {
                     Line oppLine = revLines.getLast();
                     this.lines.remove(oppLine);
+                    this.dstID.remove(type.ID);// removes connection to type port
                     typesToRemove.addLast(opposite);
                     opposite.lines.remove(oppLine);
                     System.out.print("clear srcccccccccc\n"+type+" "+opposite);
@@ -49,7 +50,7 @@ public abstract class Type implements TypeInterface {
                     System.out.print("empty\n");
                 }
                 if (type == null) {
-                    this.dstID.remove(opposite.ID);// removes dstID of opposite
+                    this.dstID.clear();// clears all dstID
                     opposite.dst.remove(opposite);
                     for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
                         entry.setValue(null);
