@@ -97,7 +97,7 @@ public abstract class Block implements BlockInterface {
                         try {
                             entry.setValue(Double.parseDouble(newText));
                             text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
-                            parent_scheme.addIntoQueue(this.id);
+                            parent_scheme.setBlockAsChanged(this.id);
                         } catch (Exception exception) {
                             text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
                         }

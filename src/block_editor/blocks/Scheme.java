@@ -284,13 +284,31 @@ public class Scheme {
     }
 
     /**
-     * \brief adds block IDs into queue
+     * \brief adds block ID into queue
      * \block_id ID of added block
      */
     public void addIntoQueue(Integer block_id){
         if(this.queue_set){
             if(this.queue.contains(block_id) == false){
                 this.queue.add(block_id);
+            }
+        }
+    }
+
+    /**
+     * \brief sets block with given ID as changed, load him into queue for computation and recursively calls this function for all his successors
+     * \param block_id id of block with changed value
+     */
+    public void setBlockAsChanged(Integer block_id) {
+        this.addIntoQueue(block_id);
+        this.getBlockByID(block_id).setShadow(null);
+        // getBlockByID(block_id).deleteOutputValues();// this function is missing, but maybe not necessary
+        for (Type port : this.getBlockByID(block_id).outputs) {
+            for(Type dst_port : port.getDst()) {
+                dst_port.deleteValues();
+            }
+            for(Integer id : port.getAllDstID()) {
+                this.setBlockAsChanged(id);
             }
         }
     }
