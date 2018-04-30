@@ -289,10 +289,9 @@ public class Scheme {
      */
     public void addIntoQueue(Integer block_id){
         if(this.queue_set){
-            this.queue_set = true;
-        }
-        if(this.queue.contains(block_id) == false){
-            this.queue.add(block_id);
+            if(this.queue.contains(block_id) == false){
+                this.queue.add(block_id);
+            }
         }
     }
 
