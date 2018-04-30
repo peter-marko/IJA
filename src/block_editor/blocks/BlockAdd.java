@@ -18,8 +18,9 @@ public class BlockAdd extends Block {
         // this.outputs.get(0).putVal("simple", output);
 
         for (Type dst : outputs.get(0).getDst()) {
+            if (dst != null)
+                dst.putVal("simple", output);
             System.out.println("propagujem\n");    
-            dst.putVal("simple", output);
         }
         for (Type cur : outputs) {
             cur.putVal("simple", output);

@@ -22,30 +22,44 @@ public abstract class Type implements TypeInterface {
     protected LinkedList<Integer> dstID = new LinkedList(); // ID of connected block
     protected Map<String, Double> items = new HashMap<String, Double>();
     
-    
-    public void clearDst() {
+    /**
+     * \brief Function for clearing output port
+     * \param type if null whole port is cleared
+     * if set than cleared only connection pointing to type
+     */
+    public void clearDst(Type type) {
         if (!this.lines.isEmpty()) {
-            // Type opposite = this.dst.getLast();
-            for (Type opposite : this.dst) {
-                for (Line currentLine : this.lines) {
-                    System.out.println("lines");
-                    this.lines.remove(currentLine);
-                    opposite.lines.remove(currentLine);
-                    ((javafx.scene.layout.Pane) currentLine.getParent()).getChildren().remove(currentLine);
+            Iterator<Type> iter = this.dst.iterator();
+            LinkedList<Type> typesToRemove = new LinkedList<>();
+            while (iter.hasNext()) {
+                Type opposite = iter.next();
+                if (type != null && type != opposite) {
+                    System.out.println("continue");
+                    continue;
                 }
-                this.dstID.remove(opposite.ID);// removes dstID of opposite
-                opposite.dst.remove(opposite);
                 LinkedList<Line> revLines = opposite.getLines();
                 if (!revLines.isEmpty()) {
-                    this.lines.remove(opposite.getLines().getLast());
+                    Line oppLine = revLines.getLast();
+                    this.lines.remove(oppLine);
+                    typesToRemove.addLast(opposite);
+                    opposite.lines.remove(oppLine);
+                    System.out.print("clear srcccccccccc\n"+type+" "+opposite);
+                    ((javafx.scene.layout.Pane) oppLine.getParent()).getChildren().remove(oppLine);
                 } else {
                     System.out.print("empty\n");
                 }
-                for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
-                    entry.setValue(null);
+                if (type == null) {
+                    this.dstID.remove(opposite.ID);// removes dstID of opposite
+                    opposite.dst.remove(opposite);
+                    for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
+                        entry.setValue(null);
+                    }
+                    System.out.println("remove");
                 }
             }
+            this.dst.removeAll(typesToRemove);
         }
+        this.set = false;
     }
     /**
      * \brief Set connection variable dst and checks types
@@ -54,7 +68,7 @@ public abstract class Type implements TypeInterface {
      */
     public void connect (Type dst, Integer dst_block_id) {
         if (dst.set)
-            dst.clearDst();
+            dst.clearDst(null);
         this.dst.addLast(dst);
         this.dstID.addLast(dst_block_id);
         dst.lines.add(0, this.lines.getLast());
