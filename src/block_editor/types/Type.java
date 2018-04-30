@@ -34,7 +34,6 @@ public abstract class Type implements TypeInterface {
             while (iter.hasNext()) {
                 Type opposite = iter.next();
                 if (type != null && type != opposite) {
-                    System.out.println("continue");
                     continue;
                 }
                 LinkedList<Line> revLines = opposite.getLines();
@@ -46,10 +45,9 @@ public abstract class Type implements TypeInterface {
                     }
                     typesToRemove.addLast(opposite);
                     opposite.lines.remove(oppLine);
-                    System.out.print("clear srcccccccccc\n"+type+" "+opposite);
                     ((javafx.scene.layout.Pane) oppLine.getParent()).getChildren().remove(oppLine);
                 } else {
-                    System.out.print("empty\n");
+                    continue;
                 }
                 if (type == null) {
                     this.dstID.clear();// clears all dstID
@@ -69,7 +67,7 @@ public abstract class Type implements TypeInterface {
      * \param dst output type, connection to other block
      * \param dst_block_id ID of block to which is port connected
      */
-    public void connect (Type dst, Integer dst_block_id) {
+    public void connect(Type dst, Integer dst_block_id) {
         if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);

@@ -40,7 +40,7 @@ public abstract class Block implements BlockInterface {
      */
     public void lineActualize(int pause) {
         if (pause == 1) {
-            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.05));
+            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.1));
             pauseTransition.setOnFinished(event -> lineActualize(0));
             pauseTransition.play();
         }
@@ -121,11 +121,13 @@ public abstract class Block implements BlockInterface {
                     Label text = new Label(entry.getKey()+" : "+df.format(entry.getValue()));
                     portGrid.setConstraints(text, 0, idx);
                     portGrid.getChildren().add(text);
+                this.lineActualize(1);
                 }
             } else {
                 System.out.println("num of lines "+out.getLines().size());
             }
             idx += 1;
+            this.lineActualize(1);
         }
         this.lineActualize(1);
     }
@@ -198,18 +200,16 @@ public abstract class Block implements BlockInterface {
         
         circle.setOnMouseReleased(e -> {
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
-            Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type);
-            if (result < 0) {
+            Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type, this.getID());
+            if (result == -2) {
                 removeIncompleteLine(type, canvas);
+                parent_scheme.msgCycleFound();
             }
             if (result == -1) {
+                removeIncompleteLine(type, canvas);
                 parent_scheme.msgTypeError();
             }
             else if (result >= 0) {
-                if (parent_scheme.connect(this.getID(), result) == false) {
-                    removeIncompleteLine(type, canvas);
-                    parent_scheme.msgCycleFound();
-                }
                 System.out.println("Connecting from [" + this.getID() + "] to [" + result + "]");
             }
         });
