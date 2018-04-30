@@ -202,11 +202,11 @@ public abstract class Type implements TypeInterface {
     }
     public void putVal(String s, double val) {
         this.items.put(s,val);
-        this.set = true;
+        //this.set = true;
     }
     public void putVal(String s) {
         this.items.put(s,null);
-        this.set = true;
+        //this.set = true;
     }
     public Integer getFirstDstID() {
         if(this.dstID.isEmpty()){
