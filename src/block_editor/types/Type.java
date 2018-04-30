@@ -69,10 +69,12 @@ public abstract class Type implements TypeInterface {
      */
     public void connect (Type dst, Integer dst_block_id) {
         if (dst.set)
-            dst.clearDst(null);
+            dst.dst.getFirst().clearDst(dst);
+            // dst.clearDst(null);
         this.dst.addLast(dst);
         this.dstID.addLast(dst_block_id);
         dst.lines.add(0, this.lines.getLast());
+        dst.dst.clear();
         dst.dst.add(this);
         dst.set = true;
     }
