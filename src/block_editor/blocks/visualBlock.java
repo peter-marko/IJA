@@ -65,12 +65,16 @@ public class visualBlock extends Region {
      */
     // this function is used when erasing block
     public void remove_lines(Block block) {
+        System.out.println("\nchange");
         for (Type t : block.inputs) {
             // get opposite port to which is t connected
-            for (Type dst : t.getDst()) {
-                dst.clearDst(t);
+            if (t != null) {
+                for (Type dst : t.getDst()) {
+                    dst.clearDst(t);
+                }
             }
         }
+        System.out.println("\nchange");
         for (Type t : block.outputs) {
             t.clearDst(null);
         }

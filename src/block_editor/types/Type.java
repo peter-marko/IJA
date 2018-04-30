@@ -22,11 +22,15 @@ public abstract class Type implements TypeInterface {
     protected LinkedList<Integer> dstID = new LinkedList(); // ID of connected block
     protected Map<String, Double> items = new HashMap<String, Double>();
     
-    
+    /**
+     * \brief Function for clearing output port
+     * \param type if null whole port is cleared
+     * if set than cleared only connection pointing to type
+     */
     public void clearDst(Type type) {
         if (!this.lines.isEmpty()) {
-            // Type opposite = this.dst.getLast();
             Iterator<Type> iter = this.dst.iterator();
+            LinkedList<Type> typesToRemove = new LinkedList<>();
             while (iter.hasNext()) {
                 Type opposite = iter.next();
                 if (type != null && type != opposite) {
@@ -35,22 +39,27 @@ public abstract class Type implements TypeInterface {
                 }
                 LinkedList<Line> revLines = opposite.getLines();
                 if (!revLines.isEmpty()) {
-                    Line oppLine = opposite.getLines().getLast();
+                    Line oppLine = revLines.getLast();
                     this.lines.remove(oppLine);
+                    typesToRemove.addLast(opposite);
                     opposite.lines.remove(oppLine);
+                    System.out.print("clear srcccccccccc\n"+type+" "+opposite);
                     ((javafx.scene.layout.Pane) oppLine.getParent()).getChildren().remove(oppLine);
                 } else {
                     System.out.print("empty\n");
                 }
-                this.dstID.remove(opposite.ID);// removes dstID of opposite
-                opposite.dst.remove(opposite);
-                for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
-                    entry.setValue(null);
+                if (type == null) {
+                    this.dstID.remove(opposite.ID);// removes dstID of opposite
+                    opposite.dst.remove(opposite);
+                    for (Map.Entry<String, Double> entry: opposite.items.entrySet()) {
+                        entry.setValue(null);
+                    }
+                    System.out.println("remove");
                 }
-                System.out.println("remove");
             }
-            iter.remove();
+            this.dst.removeAll(typesToRemove);
         }
+        this.set = false;
     }
     /**
      * \brief Set connection variable dst and checks types

@@ -77,10 +77,9 @@ public abstract class Block implements BlockInterface {
                 for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
 
                     // clearing old line if they existed
-                    for (Line l : type.getLines()) {
-                        canvas.getChildren().remove(l);
+                    for (Type dst : type.getDst()) {
+                        dst.clearDst(type);
                     }
-
                     type.set(false);
                     // Label label = new Label(entry.getKey());
                     TextField text = new TextField();
@@ -106,6 +105,7 @@ public abstract class Block implements BlockInterface {
             }
         });
     }
+    
     /**
      * \brief Function shows final output of calculation, if port not connected
      */
@@ -121,6 +121,8 @@ public abstract class Block implements BlockInterface {
                     portGrid.setConstraints(text, 0, idx);
                     portGrid.getChildren().add(text);
                 }
+            } else {
+                System.out.println("num of lines "+out.getLines().size());
             }
             idx += 1;
         }
