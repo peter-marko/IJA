@@ -41,7 +41,9 @@ public abstract class Type implements TypeInterface {
                 if (!revLines.isEmpty()) {
                     Line oppLine = revLines.getLast();
                     this.lines.remove(oppLine);
-                    this.dstID.remove(type.ID);// removes connection to type port
+                    if(type != null){
+                        this.dstID.remove(type.ID);// removes connection to type port
+                    }
                     typesToRemove.addLast(opposite);
                     opposite.lines.remove(oppLine);
                     System.out.print("clear srcccccccccc\n"+type+" "+opposite);
