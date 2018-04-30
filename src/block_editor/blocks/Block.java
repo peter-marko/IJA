@@ -69,7 +69,7 @@ public abstract class Block implements BlockInterface {
      * \param type input type
      * \todo propagate valu to type
      */
-    private void setValue(Circle circle, GridPane portGrid, Pane canvas, Type type) {
+    private void setValue(Circle circle, GridPane portGrid, Pane canvas, Type type, Scheme parent_scheme) {
         circle.setOnMouseClicked(e -> {
             if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
                 type.setFromUser();
@@ -97,6 +97,7 @@ public abstract class Block implements BlockInterface {
                         try {
                             entry.setValue(Double.parseDouble(newText));
                             text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
+                            parent_scheme.addIntoQueue(this.id);
                         } catch (Exception exception) {
                             text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
                         }
@@ -270,7 +271,7 @@ public abstract class Block implements BlockInterface {
             GridPane.setConstraints(portGrid, 0, idx);
             grid.getChildren().addAll(portGrid);
             input.setNode(circle);
-            setValue(circle, portGrid, canvas, input);
+            setValue(circle, portGrid, canvas, input, parent_scheme);
             idx += 1;
         }
 

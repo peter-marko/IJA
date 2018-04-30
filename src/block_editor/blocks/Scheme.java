@@ -284,6 +284,19 @@ public class Scheme {
     }
 
     /**
+     * \brief adds block IDs into queue
+     * \block_id ID of added block
+     */
+    public void addIntoQueue(Integer block_id){
+        if(this.queue_set){
+            this.queue_set = true;
+        }
+        if(this.queue.contains(block_id) == false){
+            this.queue.add(block_id);
+        }
+    }
+
+    /**
      * \brief finds next prepared block in queue and execute him
      * \return true if computation should continue, false if queue is empty (all block were computed) or some value is missing
      */

@@ -70,7 +70,7 @@ public abstract class Type implements TypeInterface {
      * \param dst_block_id ID of block to which is port connected
      */
     public void connect (Type dst, Integer dst_block_id) {
-        if (dst.set)
+        if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);
         this.dst.addLast(dst);
@@ -79,6 +79,18 @@ public abstract class Type implements TypeInterface {
         dst.dst.clear();
         dst.dst.add(this);
         dst.set = true;
+        if(this.set){
+            System.out.println("additonal propagation");
+            dst.propagate();
+        }
+    }
+
+    public void propagate() {
+        for (Type dst_port : this.dst) {
+            for (Map.Entry<String, Double> entry: dst_port.items.entrySet()) {
+                dst_port.putVal(entry.getKey() , entry.getValue());
+            }
+        }
     }
 
     /**
@@ -190,9 +202,11 @@ public abstract class Type implements TypeInterface {
     }
     public void putVal(String s, double val) {
         this.items.put(s,val);
+        this.set = true;
     }
     public void putVal(String s) {
         this.items.put(s,null);
+        this.set = true;
     }
     public Integer getFirstDstID() {
         if(this.dstID.isEmpty()){
