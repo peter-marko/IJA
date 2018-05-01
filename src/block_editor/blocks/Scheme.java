@@ -125,7 +125,10 @@ public class Scheme {
             }
             i++;
         }
-        this.blocks.remove(target);
+        if(target != null){
+            this.deleteFromQueue(target.getID());
+            this.blocks.remove(target);
+        }
     }
 
     /**
@@ -298,6 +301,24 @@ public class Scheme {
             if(this.queue.contains(block_id) == false){
                 this.queue.add(block_id);
             }
+        }
+    }
+
+    /**
+     * \brief removes block with given ID from queue
+     * \block_id ID of deleted block
+     */
+    public void deleteFromQueue(Integer block_id){
+        if(this.queue_set){
+            if(this.queue.contains(block_id) == true){
+                this.queue.remove(block_id);
+            }
+        }
+        if(this.queue.isEmpty())
+        {
+            System.out.println("All blocks were computed!");
+            this.msgAllExecuted();
+            this.queue_set = false;
         }
     }
 
