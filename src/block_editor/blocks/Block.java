@@ -64,6 +64,7 @@ public abstract class Block implements BlockInterface {
     }
     protected void getUserInput(Circle circle, GridPane portGrid, Type type) {
         type.setFromUser();
+        type.clearValues();
         int idx = 2;
         for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
 

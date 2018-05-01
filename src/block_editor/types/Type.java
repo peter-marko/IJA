@@ -24,6 +24,11 @@ public abstract class Type implements TypeInterface {
     protected LinkedList<Integer> dstID = new LinkedList(); // ID of connected block
     protected Map<String, Double> items = new HashMap<String, Double>();
     
+    public void clearValues() {
+        for (Map.Entry<String, Double> entry: this.items.entrySet()) {
+            entry.setValue(null);
+        }
+    }
     /**
      * \brief Function for clearing output port
      * \param type if null whole port is cleared

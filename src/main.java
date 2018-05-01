@@ -28,7 +28,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-
+import java.lang.reflect.*;
 
 import javafx.scene.input.MouseEvent;
 
@@ -62,6 +62,33 @@ public class main extends Application {
         primaryStage.setTitle("Block editor");
         primaryStage.setScene(s);
         primaryStage.show();
+    }
+    /**
+     * \brief Function for addin new blocks into menu
+     * \param name Class name of new block, located in block_editor.blocks.
+     * \param subName Name of block in GUI and menu
+     * \param menuBlock panel containing menus
+     */
+    private void addBlockToMenu(String name, String subName, Menu menuBlock) {
+        name = "block_editor.blocks."+name;
+        try {
+            Class c = Class.forName(name);
+            Constructor<Block> ctor = c.getConstructor(String.class, Integer.class);
+            MenuItem menuItem = new MenuItem(subName);
+            menuItem.setOnAction(e -> {
+                try {
+                    Block b = ctor.newInstance(subName, actual_scheme.getBlockID()); // block with new ID in scheme
+                    canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
+                    System.out.println("Creating block " + b.getName() + " " + b.getID());
+                    actual_scheme.addBlock(b); // add block object to list
+                } catch (Exception except) {
+                    System.out.println(except);
+                }
+            });
+            menuBlock.getItems().add(menuItem);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     private void GUI() {
@@ -129,32 +156,15 @@ public class main extends Application {
                 System.out.println("Cycles check failed!");
             }
         });
-           
+        
         menuFile.getItems().addAll(itemNew, itemOpen, itemSave, itemSaveAs, itemPrint, itemCheck);
-
-        MenuItem itemNewDistance2D = new MenuItem("Distance 2D"); // --------------------------------------- distance 2D
-        itemNewDistance2D.setOnAction(e -> {
-            Block b = new BlockDistance2D("2D distance", actual_scheme.getBlockID()); // block with new ID in scheme
-            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
-            System.out.println("Creating block " + b.getName() + " " + b.getID());
-            actual_scheme.addBlock(b); // add block object to list
-        });
-
-        MenuItem itemNewVector = new MenuItem("Vector"); // --------------------------------------- distance 2D
-        itemNewVector.setOnAction(e -> {
-            Block b = new BlockVector("Vector", actual_scheme.getBlockID()); // block with new ID in scheme
-            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
-            System.out.println("Creating block " + b.getName() + " " + b.getID());
-            actual_scheme.addBlock(b); // add block object to list
-        });
-
-        MenuItem itemNewSum = new MenuItem("Sum"); // ----------------------------------------------------- Sum
-        itemNewSum.setOnAction(e -> {
-            Block b = new BlockSum("Sum", actual_scheme.getBlockID()); // block with new ID in scheme
-            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
-            System.out.println("Creating block " + b.getName() + " " + b.getID());
-            actual_scheme.addBlock(b); // add block object to list
-        });
+        
+        // creating new menu items 
+        //              name of class  name of visual block, menu
+        addBlockToMenu("BlockDistance2D", "Distance 2D", menuBlock);
+        addBlockToMenu("BlockVector", "Vector", menuBlock);
+        addBlockToMenu("BlockSum", "Sum", menuBlock);
+        addBlockToMenu("BlockAdd", "Add", menuBlock);
 
         MenuItem itemNewSimpleAdd = new MenuItem("Simple add"); // --------------------------------------- Simple Add
         itemNewSimpleAdd.setOnAction(e -> {
@@ -182,8 +192,6 @@ public class main extends Application {
             actual_scheme.executeAll();
         });
         GridPane.setConstraints(run, 2, 0);
-
-        menuBlock.getItems().addAll(itemNewDistance2D, itemNewVector, itemNewSimpleAdd, itemNewSum);
 
         GridPane.setConstraints(menuBar, 0, 0);
         menuBar.getMenus().addAll(menuFile, menuBlock);
