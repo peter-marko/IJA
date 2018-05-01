@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 //import javafx.util.Pair;
 
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -75,8 +75,7 @@ public class Scheme {
         for (Block b : this.blocks) {
             for (Type t : b.getInputs()) {
                 for (Line l : t.getLines()) {
-                    // canvas.getChildren().remove(l);
-                    ((Pane) l.getParent()).getChildren().remove(l);
+                    l.remove();
                 }
             }
         }
@@ -135,7 +134,7 @@ public class Scheme {
      * \param srcType data type which port should have
      * \return ID of found block
      */
-    public Integer searchBlock(double x, double y, Type srcType) {
+    public Integer searchBlock(double x, double y, Type srcType, int srcID) {
         Line l = srcType.getLines().getLast();
         boolean set = false;
         for (Block b : this.blocks) {
@@ -149,6 +148,14 @@ public class Scheme {
                     // todo
                     Type dst = b.inputs.get(idx);
                     if (dst.getName() == srcType.getName()) {
+                        srcType.getAllDstID().addLast(b.getID());
+                        if (this.checkCycles() == true) {
+                            getBlockByID(srcID).getConnections().remove(b.getID());
+                            srcType.connect(dst, b.getID());
+                        } else {
+                            getBlockByID(srcID).getConnections().remove(b.getID());
+                            break;
+                        }
                         GridPane grid = (GridPane) circle.getParent();
                         // removing user inputText if set
                         b.removeGridVals(grid);
@@ -156,7 +163,6 @@ public class Scheme {
 
                         l.setEndX(bounds.getMinX() - 5);
                         l.setEndY(bounds.getMinY());
-                        srcType.connect(dst, b.getID());
                         // connect and unconnect
                         return b.getID();
                     } else {
