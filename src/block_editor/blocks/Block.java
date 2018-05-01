@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.geometry.Bounds;
@@ -139,7 +139,7 @@ public abstract class Block implements BlockInterface {
      */
     private void removeIncompleteLine(Type type, Pane canvas) {
         Line l = type.getLines().getLast();
-        canvas.getChildren().remove(l);
+        l.remove();
         type.getLines().removeLast();
     }
 
@@ -184,8 +184,10 @@ public abstract class Block implements BlockInterface {
             double x = boundsInBorder.getMinX();
             double y = boundsInBorder.getMinY();
             javafx.scene.control.Label t = type.addLine(x + 5,y, x + e.getX(), y + e.getY());
-            type.getLines().getLast().setEndX(x + e.getX());
-            canvas.getChildren().addAll(type.getLines().getLast(), t);
+            Line last = type.getLines().getLast();
+            last.setEndX(x + e.getX());
+            last.addAll(canvas);
+            canvas.getChildren().add(t);
         });
         
         circle.setOnMouseDragged(e -> {    

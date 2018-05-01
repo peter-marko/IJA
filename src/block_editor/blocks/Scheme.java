@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 //import javafx.util.Pair;
 
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -75,8 +75,7 @@ public class Scheme {
         for (Block b : this.blocks) {
             for (Type t : b.getInputs()) {
                 for (Line l : t.getLines()) {
-                    // canvas.getChildren().remove(l);
-                    ((Pane) l.getParent()).getChildren().remove(l);
+                    l.remove();
                 }
             }
         }

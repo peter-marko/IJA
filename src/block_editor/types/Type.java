@@ -1,6 +1,7 @@
 package block_editor.types;
 
 import java.util.LinkedList;
+import javafx.scene.paint.Color;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Iterator;
@@ -8,14 +9,15 @@ import java.util.Map;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.scene.*;
+import javafx.scene.paint.*;
 import block_editor.blocks.*;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 
 public abstract class Type implements TypeInterface {
     protected String name;
     protected boolean set;
     protected boolean fromUser;
-    protected javafx.scene.shape.Circle node;
+    protected Circle node;
     protected LinkedList<Line> lines = new LinkedList();
     protected LinkedList<Type> dst = new LinkedList();   // connected to
     protected Integer ID; // ID of source block
@@ -45,7 +47,7 @@ public abstract class Type implements TypeInterface {
                     }
                     typesToRemove.addLast(opposite);
                     opposite.lines.remove(oppLine);
-                    ((javafx.scene.layout.Pane) oppLine.getParent()).getChildren().remove(oppLine);
+                    oppLine.remove();
                 } else {
                     continue;
                 }
@@ -128,37 +130,8 @@ public abstract class Type implements TypeInterface {
         return this.lines;
     }
     public Label addLine(double x1, double y1, double x2, double y2) {
-        Line l = new Line(x1, y1, x2, y2);
-        l.setStrokeWidth(3);
-        // l.setStyle("-fx-border-width: 10px");
-        Label t = new Label();
-        // position of the text 
-        t.setVisible(false);
-        t.setLayoutX(0);
-        t.setLayoutY(0);
-        t.setStyle("-fx-background-color: white; -fx-border-color: black;");
-        l.setOnMouseEntered(e -> {
-            Double diff = l.getStartX() - e.getX();
-            if (diff*diff > 100) {
-                t.setLayoutX(e.getX()); 
-                t.setLayoutY(e.getY() + 18);
-                String text = new String();
-                for (Map.Entry<String, Double> entry: this.dst.getLast().getItems().entrySet()) {
-                    text += entry.getKey();
-                    text += " : ";
-                    text += entry.getValue();
-                    text += ", \n";
-                }
-                t.setText(text);
-                t.setVisible(true);
-                t.toFront();
-            }
-        });
-        l.setOnMouseExited(e -> {
-            t.setVisible(false);
-        });
-        this.lines.addLast(l);
-        return t;
+        Line l = new Line(x1 + 5, y1, x2 - 5, y2);
+        return l.addLine(this);
     }
     public javafx.scene.shape.Circle getNode() {
         return this.node;
