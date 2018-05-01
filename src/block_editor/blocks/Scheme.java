@@ -302,7 +302,7 @@ public class Scheme {
     public void setBlockAsChanged(Integer block_id) {
         this.addIntoQueue(block_id);
         this.getBlockByID(block_id).setShadow(null);
-        // getBlockByID(block_id).deleteOutputValues();// this function is missing, but maybe not necessary
+        // getBlockByID(block_id).deleteOutputValues();// this function is missing, but probably not necessary
         for (Type port : this.getBlockByID(block_id).outputs) {
             for(Type dst_port : port.getDst()) {
                 dst_port.deleteValues();
