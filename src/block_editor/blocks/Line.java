@@ -5,52 +5,73 @@ import java.util.Map;
 import block_editor.types.*;
 
 public class Line {
-    private javafx.scene.shape.Line visible1, visible2, visible3, transparent1, transparent2, transparent3;
+    private javafx.scene.shape.Line []visible = new javafx.scene.shape.Line[3];
+    private javafx.scene.shape.Line []transparent = new javafx.scene.shape.Line[3];
     private double startX, startY, endX, endY;
-
-    private void setCoordinates(double x1, double y1, double x2, double y2, javafx.scene.shape.Line l) {
-        l.setStartX(x1);
-        l.setStartY(y1);
-        l.setEndX(x2);
-        l.setEndY(y2);
-    }
-    private void redraw() {
-        double offset = 20;
-        double centerX = (startX + endX) / 2;
-        setCoordinates(startX, startY, centerX, startY, visible1);
-        setCoordinates(startX + offset, startY, centerX, startY, transparent1);
-        setCoordinates(centerX, startY, centerX, endY, visible2);
-        setCoordinates(centerX, startY, centerX, endY, transparent2);
-        setCoordinates(centerX, endY, endX, endY, visible3);
-        setCoordinates(centerX, endY, endX - offset, endY, transparent3);
-    }
-    private javafx.scene.shape.Line newVisible() {
-        return new javafx.scene.shape.Line();
-    }
-    private javafx.scene.shape.Line newTransparent() {
-        javafx.scene.shape.Line l = new javafx.scene.shape.Line();
-        l.setStrokeWidth(20);
-        l.setStroke(Color.rgb(0,0,0,0));
-        return l;
-    }
+    /**
+     * \brief Constructor for creating line composed of multiple sublines
+     */
     public Line(double startX, double startY, double endX, double endY) {
-        this.visible1 = newVisible();
-        this.visible2 = newVisible();
-        this.visible3 = newVisible();
-        this.transparent1 = newTransparent();
-        this.transparent2 = newTransparent();
-        this.transparent3 = newTransparent();
+        for (int i = 0; i < this.visible.length; i++) {
+            this.visible[i] = newVisible();
+        }
+        for (int i = 0; i < this.transparent.length; i++) {
+            this.transparent[i] = newTransparent();
+        }
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
         redraw();
     }
-    public void addAll(javafx.scene.layout.Pane canvas) {
-        canvas.getChildren().addAll(visible1, visible2, visible3, transparent1, transparent2, transparent3);
+
+    /**
+     * \brief Function for setting coordinates of line;
+     * \param x1 x coordinat of start point
+     * \param y1 y coordinat of start point
+     * \param x2 x coordinat of end point
+     * \param y2 y coordinat of end point
+     * \param l line to which coordinates will be set
+     */
+    private void setCoordinates(double x1, double y1, double x2, double y2, javafx.scene.shape.Line l) {
+        l.setStartX(x1);
+        l.setStartY(y1);
+        l.setEndX(x2);
+        l.setEndY(y2);
     }
-    private void removeLine(javafx.scene.shape.Line l) {
-        ((javafx.scene.layout.Pane) l.getParent()).getChildren().remove(l);
+    /**
+     * \brief Function for redrawing lines of current connection
+     */
+    private void redraw() {
+        double offset = 20;
+        double centerX = (startX + endX) / 2;
+        setCoordinates(startX, startY, centerX, startY, visible[0]);
+        setCoordinates(startX + offset, startY, centerX, startY, transparent[0]);
+        setCoordinates(centerX, startY, centerX, endY, visible[1]);
+        setCoordinates(centerX, startY, centerX, endY, transparent[1]);
+        setCoordinates(centerX, endY, endX, endY, visible[2]);
+        setCoordinates(centerX, endY, endX - offset, endY, transparent[2]);
+    }
+    /**
+     * \brief Function for creating new Visible line
+     */
+    private javafx.scene.shape.Line newVisible() {
+        return new javafx.scene.shape.Line();
+    }
+    /**
+     * \brief Function for creating new transparent line
+     */
+    private javafx.scene.shape.Line newTransparent() {
+        javafx.scene.shape.Line l = new javafx.scene.shape.Line();
+        l.setStrokeWidth(20);
+        l.setStroke(Color.rgb(0,0,0,0));
+        return l;
+    }
+    /**
+     * Function for adding new lines into global Pane canvas
+     */
+    public void addAll(javafx.scene.layout.Pane canvas) {
+        canvas.getChildren().addAll(visible[1], visible[2], visible[0], transparent[1], transparent[2], transparent[0]);
     }
     public void setStartX(double X) {
         this.startX = X;
@@ -80,14 +101,32 @@ public class Line {
     public double getEndY() {
         return endY;
     }
-    public void remove() {
-        removeLine(this.visible1);
-        removeLine(this.visible2);
-        removeLine(this.visible3);
-        removeLine(this.transparent1);
-        removeLine(this.transparent2);
-        removeLine(this.transparent3);
+
+    /**
+     * \brief Reomoves sub line from parent pane canvas
+     */
+    private void removeLine(javafx.scene.shape.Line l) {
+        ((javafx.scene.layout.Pane) l.getParent()).getChildren().remove(l);
     }
+    /**
+     * \brief Removes all sub lines from this connection
+     */
+    public void remove() {
+        for (javafx.scene.shape.Line line : this.visible) {
+            if (line != null)
+                removeLine(line);
+        }
+        for (javafx.scene.shape.Line line : this.transparent) {
+            if (line != null)
+                removeLine(line);
+        }
+    }
+    /**
+     * \brief Show label when mouse inside visible line
+     * \param e Mouse event
+     * \param label Label for showing information about connection status
+     * \param type Contains informatio about connection
+     */
     private void mouseEntered(javafx.scene.input.MouseEvent e, Label label, Type type) {
         label.setLayoutX(e.getX()); 
         label.setLayoutY(e.getY() + 18);
@@ -102,29 +141,25 @@ public class Line {
         label.setVisible(true);
         label.toFront();
     }
-    public Label addLine(Type type) {
+    /**
+     * \brief Function for showing information about connection
+     * \param type Contains informatio about connection
+     */
+    public Label enableStatusDisplay(Type type) {
         Label label = new Label();
         // position of the text 
         label.setVisible(false);
         label.setStyle("-fx-background-color: white; -fx-border-color: black;");
-        this.transparent1.setOnMouseEntered(e -> {
-            mouseEntered(e, label, type);
-        });
-        this.transparent2.setOnMouseEntered(e -> {
-            mouseEntered(e, label, type);
-        });
-        this.transparent3.setOnMouseEntered(e -> {
-            mouseEntered(e, label, type);
-        });
-        this.transparent1.setOnMouseExited(e -> {
-            label.setVisible(false);
-        });
-        this.transparent2.setOnMouseExited(e -> {
-            label.setVisible(false);
-        });
-        this.transparent3.setOnMouseExited(e -> {
-            label.setVisible(false);
-        });
+        for (javafx.scene.shape.Line line : this.transparent) {
+            line.setOnMouseEntered(e -> {
+                mouseEntered(e, label, type);
+            });
+        }
+        for (javafx.scene.shape.Line line : this.transparent) {
+            line.setOnMouseExited(e -> {
+                label.setVisible(false);
+            });
+        }
         type.getLines().addLast(this);
         return label;
     }

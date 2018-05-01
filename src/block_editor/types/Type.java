@@ -70,6 +70,7 @@ public abstract class Type implements TypeInterface {
      * \param dst_block_id ID of block to which is port connected
      */
     public void connect(Type dst, Integer dst_block_id) {
+        dst.fromUser = false;
         if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);
@@ -131,7 +132,7 @@ public abstract class Type implements TypeInterface {
     }
     public Label addLine(double x1, double y1, double x2, double y2) {
         Line l = new Line(x1 + 5, y1, x2 - 5, y2);
-        return l.addLine(this);
+        return l.enableStatusDisplay(this);
     }
     public javafx.scene.shape.Circle getNode() {
         return this.node;

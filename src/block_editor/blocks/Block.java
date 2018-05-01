@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import block_editor.types.*;
 
 public abstract class Block implements BlockInterface {
+    protected Scheme parentScheme;
     protected String name;
     protected Integer id;
     protected LinkedList<Type> outputs = new LinkedList();
@@ -61,7 +62,37 @@ public abstract class Block implements BlockInterface {
             }
         }
     }
+    protected void getUserInput(Circle circle, GridPane portGrid, Type type) {
+        type.setFromUser();
+        int idx = 2;
+        for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
 
+            // clearing old line if they existed
+            for (Type dst : type.getDst()) {
+                dst.clearDst(type);
+            }
+            type.set(false);
+            // Label label = new Label(entry.getKey());
+            TextField text = new TextField();
+            text.setPromptText(entry.getKey());
+            text.setStyle("-fx-font: 11 arial;");
+            text.setPrefWidth(60);
+            portGrid.setConstraints(text, 0, idx);
+            portGrid.getChildren().add(text);
+            lineActualize(1);
+            idx += 1;
+            // todo aktualizovat vsetky pozicie ciar v tomto bloku
+            text.textProperty().addListener((obs, oldText, newText) -> {
+                try {
+                    entry.setValue(Double.parseDouble(newText));
+                    text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
+                    parentScheme.setBlockAsChanged(this.id);
+                } catch (Exception exception) {
+                    text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
+                }
+            });
+        }
+    }
     /**
      * \brief Function for user input, cretes TextField where user enters input value
      * \param circle Node when clicked 2 times textfield created
@@ -69,40 +100,10 @@ public abstract class Block implements BlockInterface {
      * \param type input type
      * \todo propagate valu to type
      */
-    private void setValue(Circle circle, GridPane portGrid, Pane canvas, Type type, Scheme parent_scheme) {
+    protected void setValue(Circle circle, GridPane portGrid, Type type) {
         circle.setOnMouseClicked(e -> {
-            if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
-                type.setFromUser();
-                int idx = 2;
-                for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
-
-                    // clearing old line if they existed
-                    for (Type dst : type.getDst()) {
-                        dst.clearDst(type);
-                    }
-                    type.set(false);
-                    // Label label = new Label(entry.getKey());
-                    TextField text = new TextField();
-                    text.setPromptText(entry.getKey());
-                    text.setStyle("-fx-font: 11 arial;");
-                    text.setPrefWidth(60);
-                    // portGrid.setConstraints(label, 0, idx + 1);
-                    portGrid.setConstraints(text, 0, idx);
-                    portGrid.getChildren().add(text);
-                    // canvas.getChildren().addAll(border);
-                    lineActualize(1);
-                    idx += 1;
-                    // todo aktualizovat vsetky pozicie ciar v tomto bloku
-                    text.textProperty().addListener((obs, oldText, newText) -> {
-                        try {
-                            entry.setValue(Double.parseDouble(newText));
-                            text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
-                            parent_scheme.setBlockAsChanged(this.id);
-                        } catch (Exception exception) {
-                            text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
-                        }
-                    });
-                }
+            if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2 && (!type.isFromUser() || !type.isSet())){
+                getUserInput(circle, portGrid, type);
             }
         });
     }
@@ -172,7 +173,7 @@ public abstract class Block implements BlockInterface {
      * \param type output data structure, which should be linked
      * \param parent_scheme global scheme for storing visual blocks
      */
-    private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type, Scheme parent_scheme) {
+    private void lineFromCircle(Circle circle, BorderPane border, Pane canvas, Type type) {
         
         circle.setOnMousePressed(e -> {
             GridPane grid = (GridPane) circle.getParent();
@@ -201,15 +202,14 @@ public abstract class Block implements BlockInterface {
         });
         
         circle.setOnMouseReleased(e -> {
-            Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
-            Integer result = parent_scheme.searchBlock(e.getSceneX(), e.getSceneY(), type, this.getID());
+            Integer result = parentScheme.searchBlock(e.getSceneX(), e.getSceneY(), type, this.getID());
             if (result == -2) {
                 removeIncompleteLine(type, canvas);
-                parent_scheme.msgCycleFound();
+                parentScheme.msgCycleFound();
             }
             if (result == -1) {
                 removeIncompleteLine(type, canvas);
-                parent_scheme.msgTypeError();
+                parentScheme.msgTypeError();
             }
             else if (result >= 0) {
                 System.out.println("Connecting from [" + this.getID() + "] to [" + result + "]");
@@ -242,6 +242,7 @@ public abstract class Block implements BlockInterface {
      * \param block_id identifier of current block
      */
     public visualBlock constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id) {
+        this.parentScheme = parent_scheme;
         // content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -273,7 +274,7 @@ public abstract class Block implements BlockInterface {
             GridPane.setConstraints(portGrid, 0, idx);
             grid.getChildren().addAll(portGrid);
             input.setNode(circle);
-            setValue(circle, portGrid, canvas, input, parent_scheme);
+            setValue(circle, portGrid, input);
             idx += 1;
         }
 
@@ -291,7 +292,7 @@ public abstract class Block implements BlockInterface {
 
             grid.getChildren().addAll(portGrid);
             output.setNode(circle);
-            lineFromCircle(circle, windowPane, canvas, output, parent_scheme);
+            lineFromCircle(circle, windowPane, canvas, output);
             idx += 1;
         }
         windowPane.setCenter(grid);
