@@ -15,7 +15,7 @@ import block_editor.types.*;
 
 public class Scheme {
     private LinkedList<Block> blocks; // strores block objects (instacies of Block class)
-    private LinkedList<Con> connections; // stores information about which blocks are connected to each other
+    //private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
     private LinkedList<Integer> queue; // queue with IDs of not computed blocks
     private boolean queue_set; // false if queue was not initialized
@@ -29,7 +29,7 @@ public class Scheme {
      */
     public Scheme() {
         this.blocks = new LinkedList<Block>();
-        this.connections = new LinkedList<Con>();
+        //this.connections = new LinkedList<Con>();
         this.next_id = 0;
         this.queue = new LinkedList<Integer>();
         this.queue_set = false;
@@ -80,7 +80,7 @@ public class Scheme {
             }
         }
         this.blocks.clear();
-        this.connections.clear();
+        //this.connections.clear();
         next_id = 0;
         this.queue.clear();
         this.queue_set = false;
@@ -201,7 +201,7 @@ public class Scheme {
      * \param srcBlockID ID of source block
      * \param dstBlockID ID of destination block
      */
-    public void unconnect(Integer srcBlockID, Integer dstBlockID){
+    /*public void unconnect(Integer srcBlockID, Integer dstBlockID){
         for (Con connection : this.connections) {
             if(connection.src == srcBlockID && connection.dst == dstBlockID)
             {
@@ -209,7 +209,7 @@ public class Scheme {
                 return;
             }
         }
-    }
+    }*/
 
     /**
      * \brief checks if scheme contains cycles - calls recursive function for every block in Scheme
@@ -426,7 +426,7 @@ public class Scheme {
     }
 
     //just for encapsulation
-    private class Con {
+    /*private class Con {
         Integer src, dst;
-    }
+    }*/
 } 
