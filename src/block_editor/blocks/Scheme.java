@@ -313,12 +313,12 @@ public class Scheme {
             if(this.queue.contains(block_id) == true){
                 this.queue.remove(block_id);
             }
-        }
-        if(this.queue.isEmpty())
-        {
-            System.out.println("All blocks were computed!");
-            this.msgAllExecuted();
-            this.queue_set = false;
+            if(this.queue.isEmpty())
+            {
+                System.out.println("All blocks were computed!");
+                this.msgAllExecuted();
+                this.queue_set = false;
+            }
         }
     }
 
