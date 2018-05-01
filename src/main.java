@@ -139,7 +139,16 @@ public class main extends Application {
             System.out.println("Creating block " + b.getName() + " " + b.getID());
             actual_scheme.addBlock(b); // add block object to list
         });
-        MenuItem itemNewSum = new MenuItem("Sum"); // --------------------------------------- distance 2D
+
+        MenuItem itemNewVector = new MenuItem("Vector"); // --------------------------------------- distance 2D
+        itemNewVector.setOnAction(e -> {
+            Block b = new BlockVector("Vector", actual_scheme.getBlockID()); // block with new ID in scheme
+            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
+            System.out.println("Creating block " + b.getName() + " " + b.getID());
+            actual_scheme.addBlock(b); // add block object to list
+        });
+
+        MenuItem itemNewSum = new MenuItem("Sum"); // ----------------------------------------------------- Sum
         itemNewSum.setOnAction(e -> {
             Block b = new BlockSum("Sum", actual_scheme.getBlockID()); // block with new ID in scheme
             canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
@@ -147,7 +156,7 @@ public class main extends Application {
             actual_scheme.addBlock(b); // add block object to list
         });
 
-        MenuItem itemNewSimpleAdd = new MenuItem("Simple add"); // --------------------------------------- Simple
+        MenuItem itemNewSimpleAdd = new MenuItem("Simple add"); // --------------------------------------- Simple Add
         itemNewSimpleAdd.setOnAction(e -> {
             Block b = new BlockAdd("Simple add", actual_scheme.getBlockID()); // block with new ID in scheme
             canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
@@ -174,7 +183,7 @@ public class main extends Application {
         });
         GridPane.setConstraints(run, 2, 0);
 
-        menuBlock.getItems().addAll(itemNewDistance2D, itemNewSimpleAdd, itemNewSum);
+        menuBlock.getItems().addAll(itemNewDistance2D, itemNewVector, itemNewSimpleAdd, itemNewSum);
 
         GridPane.setConstraints(menuBar, 0, 0);
         menuBar.getMenus().addAll(menuFile, menuBlock);
