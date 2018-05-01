@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scheme next_id="7">
+
+  <block name="Simple Add" id="1">
+      <input name="simple">
+      </input>
+      <input name="simple">
+      </input>
+      <output name="simple">
+          <connection>2</connection>
+      </output>
+  </block>
+  
+  <block name="Simple Add" id="2">
+      <input name="simple">
+          <connection>1</connection>
+      </input>
+      <input name="simple">
+      </input>
+      <output name="simple">
+      </output>
+  </block>
+  
+</scheme>

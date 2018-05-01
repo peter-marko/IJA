@@ -15,7 +15,7 @@ import block_editor.types.*;
 
 public class Scheme {
     private LinkedList<Block> blocks; // strores block objects (instacies of Block class)
-    private LinkedList<Con> connections; // stores information about which blocks are connected to each other
+    //private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
     private LinkedList<Integer> queue; // queue with IDs of not computed blocks
     private boolean queue_set; // false if queue was not initialized
@@ -29,7 +29,7 @@ public class Scheme {
      */
     public Scheme() {
         this.blocks = new LinkedList<Block>();
-        this.connections = new LinkedList<Con>();
+        //this.connections = new LinkedList<Con>();
         this.next_id = 0;
         this.queue = new LinkedList<Integer>();
         this.queue_set = false;
@@ -80,7 +80,7 @@ public class Scheme {
             }
         }
         this.blocks.clear();
-        this.connections.clear();
+        //this.connections.clear();
         next_id = 0;
         this.queue.clear();
         this.queue_set = false;
@@ -125,7 +125,10 @@ public class Scheme {
             }
             i++;
         }
-        this.blocks.remove(target);
+        if(target != null){
+            this.deleteFromQueue(target.getID());
+            this.blocks.remove(target);
+        }
     }
 
     /**
@@ -201,7 +204,7 @@ public class Scheme {
      * \param srcBlockID ID of source block
      * \param dstBlockID ID of destination block
      */
-    public void unconnect(Integer srcBlockID, Integer dstBlockID){
+    /*public void unconnect(Integer srcBlockID, Integer dstBlockID){
         for (Con connection : this.connections) {
             if(connection.src == srcBlockID && connection.dst == dstBlockID)
             {
@@ -209,7 +212,7 @@ public class Scheme {
                 return;
             }
         }
-    }
+    }*/
 
     /**
      * \brief checks if scheme contains cycles - calls recursive function for every block in Scheme
@@ -302,13 +305,31 @@ public class Scheme {
     }
 
     /**
+     * \brief removes block with given ID from queue
+     * \block_id ID of deleted block
+     */
+    public void deleteFromQueue(Integer block_id){
+        if(this.queue_set){
+            if(this.queue.contains(block_id) == true){
+                this.queue.remove(block_id);
+            }
+        }
+        if(this.queue.isEmpty())
+        {
+            System.out.println("All blocks were computed!");
+            this.msgAllExecuted();
+            this.queue_set = false;
+        }
+    }
+
+    /**
      * \brief sets block with given ID as changed, load him into queue for computation and recursively calls this function for all his successors
      * \param block_id id of block with changed value
      */
     public void setBlockAsChanged(Integer block_id) {
         this.addIntoQueue(block_id);
         this.getBlockByID(block_id).setShadow(null);
-        // getBlockByID(block_id).deleteOutputValues();// this function is missing, but maybe not necessary
+        // getBlockByID(block_id).deleteOutputValues();// this function is missing, but probably not necessary
         for (Type port : this.getBlockByID(block_id).outputs) {
             for(Type dst_port : port.getDst()) {
                 dst_port.deleteValues();
@@ -426,7 +447,7 @@ public class Scheme {
     }
 
     //just for encapsulation
-    private class Con {
+    /*private class Con {
         Integer src, dst;
-    }
+    }*/
 } 
