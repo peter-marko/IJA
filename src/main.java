@@ -28,8 +28,22 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+
+
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import java.io.File;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.*;
+
 import java.lang.reflect.*;
 
+// import java.beans.XMLEncoder;
+// import java.io.BufferedOutputStream;
+// import java.io.FileOutputStream;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -77,8 +91,9 @@ public class main extends Application {
             MenuItem menuItem = new MenuItem(subName);
             menuItem.setOnAction(e -> {
                 try {
-                    Block b = ctor.newInstance(subName, actual_scheme.getBlockID()); // block with new ID in scheme
-                    canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
+                    Block b = null;
+                    b = ctor.newInstance(subName, actual_scheme.getBlockID()); // block with new ID in scheme
+                    canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID(), 0, 0));
                     System.out.println("Creating block " + b.getName() + " " + b.getID());
                     actual_scheme.addBlock(b); // add block object to list
                 } catch (Exception except) {
@@ -90,7 +105,52 @@ public class main extends Application {
             System.out.println(e);
         }
     }
+    private void deserializeLines(NodeList nList) {
+        for (Block b : actual_scheme.getBlocks()) {
+            Integer portIdx = 0;
+            for (block_editor.types.Type t : b.getOutputs()) {
+                t.deserializeOut(actual_scheme, nList, b.getID().toString(), portIdx.toString(), b);
+                portIdx += 1;
+            }
+        }
+    }
+    private void deserialize() {
+        NodeList nList = null;
+        try {
 
+            File fXmlFile = new File("/home/pmarko/Documents/fit/IJA/IJA/blockEditor.xml");
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = docFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(fXmlFile);
+                    
+            doc.getDocumentElement().normalize();
+        
+            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+                    
+            nList = doc.getElementsByTagName("Block");
+        
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                Element elem = (Element) nNode;
+
+                Double X = new Double(elem.getAttribute("coordX"));
+                Double Y = new Double(elem.getAttribute("coordY"));
+
+                Class c = Class.forName("block_editor.blocks."+elem.getAttribute("className"));
+                Constructor<Block> ctor = c.getConstructor(String.class, Integer.class);
+                Block b = ctor.newInstance(elem.getAttribute("name"), actual_scheme.getBlockID());
+                canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID(), X, Y));
+                actual_scheme.addBlock(b);
+                b.deserialize(elem, canvas);
+            }
+            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.1));
+            final NodeList inList = nList;
+            pauseTransition.setOnFinished(event -> deserializeLines(inList));
+            pauseTransition.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void GUI() {
         // content
         grid = new GridPane();
@@ -114,21 +174,47 @@ public class main extends Application {
         MenuItem itemOpen = new MenuItem("Open"); // ----------------------------------------------------- open
         itemOpen.setOnAction(e -> {
             // TODO
-            FileChooser fc = new FileChooser();
-            // file = fc.showOpenDialog(primaryStage);
-            file = fc.showOpenDialog(new Stage());
-            if (file != null) {
-                try {
-                    Desktop.getDesktop().open(file);
-                } catch (IOException ex) {
-                    System.out.println("Error : opening file");
-                }
-            }
+            // FileChooser fc = new FileChooser();
+            // // file = fc.showOpenDialog(primaryStage);
+            // file = fc.showOpenDialog(new Stage());
+            // if (file != null) {
+            //     try {
+            //         Desktop.getDesktop().open(file);
+            //     } catch (IOException ex) {
+            //         System.out.println("Error : opening file");
+            //     }
+            // }
+            deserialize();
         });
      
         MenuItem itemSave = new MenuItem("Save"); // ----------------------------------------------------- save
         itemSave.setOnAction(e -> {
-            // TODO
+
+            try {
+                DocumentBuilderFactory docFactory =  DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                Document doc = docBuilder.newDocument();
+		        Element root = doc.createElement("blockEditor");
+		        doc.appendChild(root);
+                for (Block b : this.actual_scheme.getBlocks()) {
+                    b.serialize(doc, root);
+                }
+
+		        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		        Transformer transformer = transformerFactory.newTransformer();
+		        DOMSource source = new DOMSource(doc);
+		        StreamResult result = new StreamResult(new File("/home/pmarko/Documents/fit/IJA/IJA/blockEditor.xml"));
+
+		        // Output to console for testing
+		        // StreamResult result = new StreamResult(System.out);
+
+		        transformer.transform(source, result);
+
+		        System.out.println("File saved!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+          
             System.out.println("Item Save Clicked");
         });
 
@@ -165,15 +251,7 @@ public class main extends Application {
         addBlockToMenu("BlockVector", "Vector", menuBlock);
         addBlockToMenu("BlockSum", "Sum", menuBlock);
         addBlockToMenu("BlockAdd", "Add", menuBlock);
-
-        MenuItem itemNewSimpleAdd = new MenuItem("Simple add"); // --------------------------------------- Simple Add
-        itemNewSimpleAdd.setOnAction(e -> {
-            Block b = new BlockAdd("Simple add", actual_scheme.getBlockID()); // block with new ID in scheme
-            canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID()));
-            System.out.println("Creating block " + b.getName() + " " + b.getID());
-            actual_scheme.addBlock(b); // add block object to list
-        });
-
+        addBlockToMenu("BlockCenterOfGravity", "Center of gravity", menuBlock);
         
         Button step = new Button(); // --------------------------------------------------------------------- step
         step.setText("Step");

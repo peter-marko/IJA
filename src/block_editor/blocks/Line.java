@@ -22,6 +22,10 @@ public class Line {
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
+        System.out.println("coord startX "+this.startX);
+        System.out.println("coord startY "+this.startY);
+        System.out.println("coord endX "+this.endX);
+        System.out.println("coord endY "+this.endY);
         redraw();
     }
 
@@ -43,14 +47,25 @@ public class Line {
      * \brief Function for redrawing lines of current connection
      */
     private void redraw() {
-        double offset = 20;
+        double offset = this.transparent[0].getStrokeWidth();
+        double offsetX = offset;
+        double offsetY = offset;
         double centerX = (startX + endX) / 2;
+        if (startX > endX)
+            offsetX = -offsetX;
+        if (startY > endY)
+            offsetY = -offsetY;
+        if (startX < endX - offset || startX > endX + offset) {
+            setCoordinates(startX + offsetX, startY, centerX, startY, transparent[0]);
+            setCoordinates(centerX, endY, endX - offsetX, endY, transparent[2]);
+        } else {
+            setCoordinates(0,0,0,0,transparent[0]);
+            setCoordinates(0,0,0,0,transparent[2]);
+        }
         setCoordinates(startX, startY, centerX, startY, visible[0]);
-        setCoordinates(startX + offset, startY, centerX, startY, transparent[0]);
         setCoordinates(centerX, startY, centerX, endY, visible[1]);
-        setCoordinates(centerX, startY, centerX, endY, transparent[1]);
+        setCoordinates(centerX, startY + offsetY, centerX, endY - offsetY, transparent[1]);
         setCoordinates(centerX, endY, endX, endY, visible[2]);
-        setCoordinates(centerX, endY, endX - offset, endY, transparent[2]);
     }
     /**
      * \brief Function for creating new Visible line
@@ -63,7 +78,7 @@ public class Line {
      */
     private javafx.scene.shape.Line newTransparent() {
         javafx.scene.shape.Line l = new javafx.scene.shape.Line();
-        l.setStrokeWidth(20);
+        l.setStrokeWidth(15);
         l.setStroke(Color.rgb(0,0,0,0));
         return l;
     }

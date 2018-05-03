@@ -23,19 +23,8 @@ public class BlockSum extends Block {
 
         int idx = parentGrid.getRowIndex(this.inputs.getLast().getNode().getParent());
 
-        System.out.println("row "+idx);
         idx += 1;
-        GridPane portGrid = new GridPane();
-        Circle circle = new Circle(0, 0, 5);
-        Label inputType = new Label("Simple");
-        inputType.setStyle("-fx-font: 12 arial;");
-        portGrid.getChildren().addAll(circle, inputType);
-        portGrid.setConstraints(inputType, 0, 0);
-        portGrid.setConstraints(circle, 0, 1);
-        parentGrid.setConstraints(portGrid, 0, idx);
-        parentGrid.getChildren().addAll(portGrid);
-        next.setNode(circle);
-        this.setValue(circle, portGrid, next);
+        newPort(parentGrid, next, idx, 0, null);
         this.inputs.add(next);
     }
     @Override

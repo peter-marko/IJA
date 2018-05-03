@@ -281,6 +281,10 @@ public class Scheme {
         }
         return null;
     }
+
+    public LinkedList<Block> getBlocks() {
+        return this.blocks;
+    }
     
     /**
      * \brief loads block IDs to queue
