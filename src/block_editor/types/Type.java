@@ -17,7 +17,7 @@ import javafx.scene.shape.Circle;
 public abstract class Type implements TypeInterface, java.io.Serializable {
     protected String name;
     protected boolean set;
-    protected int fromUser;
+    protected int status;
     protected transient Circle node;
     protected LinkedList<Line> lines = new LinkedList();
     protected LinkedList<Type> dst = new LinkedList();   // connected to
@@ -76,7 +76,7 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
      * \param dst_block_id ID of block to which is port connected
      */
     public void connect(Type dst, Integer dst_block_id) {
-        dst.fromUser = 1;
+        dst.status = 1;
         if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);
@@ -149,19 +149,19 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
     public boolean isSet() {
         return this.set;
     }
-    public boolean isFromUser(){
-        if (fromUser != 0)
+    public boolean isStatus(){
+        if (status != 0)
             return true;
         return false;
     }
-    public void setFromUser(Integer val){
-        this.fromUser = val;
+    public void setStatus(Integer val){
+        this.status = val;
     }
-    public Integer getFromUser(){
-        return this.fromUser;
+    public Integer getStatus(){
+        return this.status;
     }
-    public void unsetFromUser(){
-        this.fromUser = 0;
+    public void unsetStatus(){
+        this.status = 0;
     }
     public void set(boolean set) {
         this.set = set;

@@ -1,38 +1,21 @@
-
-
-import java.awt.Desktop;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import javafx.stage.FileChooser;
 import java.io.*;
-import java.util.Scanner;
-
-
 import javafx.geometry.Insets;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-
 import java.lang.reflect.*;
-
-// import java.beans.XMLEncoder;
-// import java.io.BufferedOutputStream;
-// import java.io.FileOutputStream;
 import javafx.scene.input.MouseEvent;
-
-import java.io.IOException;
 
 import block_editor.blocks.*;
 import block_editor.types.*;
@@ -97,8 +80,8 @@ public class main extends Application {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Resource File");
             fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Block editor Files", "*.block"),
-                new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new FileChooser.ExtensionFilter("Block editor Files (.block)", "*.block"),
+                new FileChooser.ExtensionFilter("Text Files (.txt)", "*.txt"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
             state.file = fileChooser.showOpenDialog(new Stage()).getAbsolutePath();
         } catch (Exception e) {
@@ -108,7 +91,10 @@ public class main extends Application {
     private void chooseDst() {
         try {
             FileChooser fileChooser = new FileChooser();
-            
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Block editor Files (.block)", "*.block"),
+                new FileChooser.ExtensionFilter("Text Files (.txt)", "*.txt"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
             File file = fileChooser.showSaveDialog(new Stage());
             state.file = file.getAbsolutePath();
         } catch (Exception e) {
@@ -153,15 +139,16 @@ public class main extends Application {
         
         MenuItem itemSave = new MenuItem("Save"); // ----------------------------------------------------- save
         itemSave.setOnAction(e -> {
+            if (state.file == null) {
+                chooseDst();
+            }
             state.serialize();
-            System.out.println("Item Save Clicked");
         });
 
         MenuItem itemSaveAs = new MenuItem("Save as"); // --------------------------------------------------- save as
         itemSaveAs.setOnAction(e -> {
             chooseDst();
             state.serialize();
-            System.out.println("Item Save as Clicked");
         });
 
         MenuItem itemPrint = new MenuItem("*Print"); // --------------------------------------------------- *print (debug)

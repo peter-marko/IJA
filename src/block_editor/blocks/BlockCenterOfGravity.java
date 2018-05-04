@@ -20,7 +20,7 @@ public class BlockCenterOfGravity extends Block {
         Type next = new TypeCoordinate2D(this.getID());
         next.putVal("x", 0);
         next.putVal("y", 0);
-        next.setFromUser(2);
+        next.setStatus(2);
 
         int idx = parentGrid.getRowIndex(this.inputs.getLast().getNode().getParent());
 
@@ -37,8 +37,8 @@ public class BlockCenterOfGravity extends Block {
         return out;
     }
     @Override
-    protected void getUserInput(Circle circle, GridPane portGrid, Type type, Boolean load) {
-        super.getUserInput(circle, portGrid, type, false);
+    protected void getUserInput(GridPane portGrid, Type type, Boolean load) {
+        super.getUserInput(portGrid, type, false);
         GridPane parentGrid = (GridPane)portGrid.getParent();
         System.out.println("left "+parentGrid.getRowIndex(portGrid)+" right "+this.inputs.size());
         if (parentGrid.getRowIndex(portGrid) == this.inputs.size() - 1)

@@ -2,34 +2,28 @@ package block_editor.blocks;
 
 import javafx.geometry.Insets;
 import javafx.geometry.HPos;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.geometry.Bounds;
-import java.util.Optional;
 import java.util.Map;
-import java.awt.Point;
-import java.beans.IndexedPropertyChangeEvent;
-import java.awt.MouseInfo;
 import java.util.LinkedList;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import java.util.Iterator;
 import java.text.DecimalFormat;
-import org.w3c.dom.*;
 import java.lang.reflect.Constructor;
-import block_editor.types.*;
 
+import block_editor.types.*;
+/**
+ * \brief Class holding data about logic blocks
+ */
 public abstract class Block implements BlockInterface, java.io.Serializable {
     protected Scheme parentScheme;
     protected Integer id;
@@ -40,18 +34,35 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
     protected double x;
     protected double y;
 
+    /**
+     * \brief get X Position of left upper corner
+     */
     public double getX() {
         return this.x;
     }
+    /**
+     * \brief get Y Position of left upper corner
+     */
     public double getY() {
         return this.y;
     }
+    /**
+     * \brief Actualize info before serialized
+     */
     public void serialize() {
         Bounds bounds = this.border.localToScene(this.border.getBoundsInLocal());
         this.x = bounds.getMinX();
         this.y = bounds.getMinY();
     }
 
+    /**
+     * \brief Function for adding next port to visual block
+     * \param parentGrid main grid of visual block
+     * \param next metadata for setting up new port
+     * \param row  row in grid where should be new port
+     * \param col column of new port, when 0 == input port
+     * \param canvas main pane, where blocks and lines are located
+     */
     protected void newPort(GridPane parentGrid, Type next, int row, int col, Pane canvas) {
         GridPane portGrid = new GridPane();
         Circle circle = new Circle(0, 0, 5);
@@ -71,9 +82,11 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
             portGrid.setHalignment(circle, HPos.RIGHT);
             lineFromCircle(circle, canvas, next);
         }
-        if (next.getFromUser() == 1 && !next.isSet()) {
-            getUserInput(next.getNode(), portGrid, next, true);
-
+        if (next.getStatus() == 1 && !next.isSet()) {
+            getUserInput(portGrid, next, true);
+        }
+        if (next.getStatus() == 3 && !next.isSet()) {
+            showValue(next);
         }
     }
 
@@ -107,9 +120,17 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
             }
         }
     }
-    protected void getUserInput(Circle circle, GridPane portGrid, Type type, Boolean load) {
+    /**
+     * \brief Function for creating text field inside of visual block and 
+     * loading input from user
+     * \param portGrid port where text field should be created
+     * \param type Metadata for writing output
+     * \param load true if metadata are loaded from file at deserialization,
+     * than dont make checks
+     */
+    protected void getUserInput(GridPane portGrid, Type type, Boolean load) {
         if (!load) {
-            type.setFromUser(1);
+            type.setStatus(1);
             type.clearValues();
         }
         int idx = 2;
@@ -157,29 +178,36 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
     protected void setValue(Circle circle, GridPane portGrid, Type type) {
         circle.setOnMouseClicked(e -> {
             if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
-                getUserInput(circle, portGrid, type, false);
+                getUserInput(portGrid, type, false);
             }
         });
     }
-    
+    /**
+     * \brief prints value at the output port
+     * \param out Port where should be value printed
+     */
+    protected void showValue(Type out) {
+        GridPane portGrid = (GridPane)out.getNode().getParent();
+            int idx = 2;
+            out.setStatus(3);
+            removeGridVals(portGrid);
+            for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
+                System.out.println("out "+idx);
+                DecimalFormat df = new DecimalFormat("#.####");
+                Label text = new Label(entry.getKey()+" : "+df.format(entry.getValue()));
+                portGrid.setConstraints(text, 0, idx);
+                portGrid.getChildren().add(text);
+                // this.lineActualize(1);
+                idx += 1;
+            }
+    }
     /**
      * \brief Function shows final output of calculation, if port not connected
      */
     protected void showValues() {
         for (Type out : this.outputs) {
             if (out.getLines().isEmpty()) {
-                GridPane portGrid = (GridPane)out.getNode().getParent();
-                int idx = 2;
-                removeGridVals(portGrid);
-                for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
-                    System.out.println("out "+idx);
-                    DecimalFormat df = new DecimalFormat("#.####");
-                    Label text = new Label(entry.getKey()+" : "+df.format(entry.getValue()));
-                    portGrid.setConstraints(text, 0, idx);
-                    portGrid.getChildren().add(text);
-                    // this.lineActualize(1);
-                    idx += 1;
-                }
+                showValue(out);
             } else {
                 System.out.println("num of lines "+out.getLines().size());
             }
@@ -223,12 +251,11 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
     /**
      * \brief handles drag events from output ports
      * \param circle node, whic is being connected
-     * \param border Pane containing block scheme
      * \param canvas global pane for drawing lines
      * \param type output data structure, which should be linked
-     * \param parent_scheme global scheme for storing visual blocks
      */
     private void lineFromCircle(Circle circle, Pane canvas, Type type) {
+        // source circle was clicked -> initialization
         circle.setOnMousePressed(e -> {
             GridPane grid = (GridPane) circle.getParent();
 
@@ -244,6 +271,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
             last.addAll(canvas);
             canvas.getChildren().add(t);
         });
+        // drawing line as user moves with mouse
         circle.setOnMouseDragged(e -> {    
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
             double x = boundsInBorder.getMinX();
@@ -253,6 +281,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
                 type.getLines().getLast().setEndY(y + e.getY());
             }
         });
+        // connecting to input port
         circle.setOnMouseReleased(e -> {
             Integer result = parentScheme.searchBlock(e.getSceneX(), e.getSceneY(), type, this.getID());
             if (result == -2) {
@@ -292,6 +321,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
      * \param cavas space, where is block drawn
      * \param parent_scheme global scheme for storing visual blocks
      * \param block_id identifier of current block
+     * \param x, y coordinates where visual block will be created
      */
     public visualBlock constructWindow(Pane canvas, Scheme parent_scheme, Integer block_id, double X, double Y) {
         this.parentScheme = parent_scheme;
@@ -416,7 +446,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
      */
     public void deleteInputValues() {
         for (Type input : this.inputs) {
-            if(input.isFromUser() == false){
+            if(input.isStatus() == false){
                 input.deleteValues();
             }
         }

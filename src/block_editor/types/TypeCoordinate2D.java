@@ -3,7 +3,7 @@ public class TypeCoordinate2D extends Type {
     
     public TypeCoordinate2D(Integer block_id) {
         this.set = false;
-        this.fromUser = 0;
+        this.status = 0;
         this.name = "Coordinate2D";
         this.putVal("x");
         this.putVal("y");
