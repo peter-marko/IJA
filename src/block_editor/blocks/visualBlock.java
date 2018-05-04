@@ -1,11 +1,13 @@
 package block_editor.blocks;
 
+import javafx.geometry.Bounds;
 import block_editor.types.Type;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import block_editor.types.*;
 // import javafx.scene.shape.Line;
 
 public class visualBlock extends Region {
@@ -44,8 +46,11 @@ public class visualBlock extends Region {
         for (Type t : block.inputs) {
             if (t != null && t.getLines() != null) {
                 for (Line l : t.getLines()) {
+                    Bounds boundsOpposite = t.getDst().get(0).getNode().localToScene(block.border.getBoundsInLocal());
                     l.setEndX(l.getEndX() + x_diff);
                     l.setEndY(l.getEndY() + y_diff);
+                    l.setStartX(boundsOpposite.getMinX() + 5);
+                    l.setStartY(boundsOpposite.getMinY());
                 }
             }
         }

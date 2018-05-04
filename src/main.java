@@ -1,18 +1,14 @@
 
 
 import java.awt.Desktop;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import javafx.stage.FileChooser;
-
 import java.io.*;
 import java.util.Scanner;
 
-import java.io.IOException;
+
 import javafx.geometry.Insets;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -29,16 +25,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
-
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
-import java.io.File;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.*;
-
 import java.lang.reflect.*;
 
 // import java.beans.XMLEncoder;
@@ -54,12 +40,11 @@ import block_editor.types.*;
 //import java.util.LinkedList;
 
 public class main extends Application {
-    private File file;
-    private GridPane grid;
-    private Pane root;
-    private Pane canvas;
+    public GridPane grid;
+    public Pane root;
+    public Pane canvas;
+    private programState state = new programState();
 
-    private Scheme actual_scheme = new Scheme();
 
     //public LinkedList<Block> blocks = new LinkedList<Block>();
     
@@ -92,12 +77,13 @@ public class main extends Application {
             menuItem.setOnAction(e -> {
                 try {
                     Block b = null;
-                    b = ctor.newInstance(subName, actual_scheme.getBlockID()); // block with new ID in scheme
-                    canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID(), 0, 0));
+                    b = ctor.newInstance(subName, state.scheme.getBlockID()); // block with new ID in scheme
+                    canvas.getChildren().add(b.constructWindow(root, state.scheme, b.getID(), 0, 0));
                     System.out.println("Creating block " + b.getName() + " " + b.getID());
-                    actual_scheme.addBlock(b); // add block object to list
+                    state.scheme.addBlock(b); // add block object to list
                 } catch (Exception except) {
-                    System.out.println(except);
+                    // System.out.println(except);
+                    except.printStackTrace();
                 }
             });
             menuBlock.getItems().add(menuItem);
@@ -105,53 +91,32 @@ public class main extends Application {
             System.out.println(e);
         }
     }
-    private void deserializeLines(NodeList nList) {
-        for (Block b : actual_scheme.getBlocks()) {
-            Integer portIdx = 0;
-            for (block_editor.types.Type t : b.getOutputs()) {
-                t.deserializeOut(actual_scheme, nList, b.getID().toString(), portIdx.toString(), b);
-                portIdx += 1;
-            }
+
+    private void chooseSrc() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Block editor Files", "*.block"),
+                new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+            state.file = fileChooser.showOpenDialog(new Stage()).getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-    private void deserialize() {
-        NodeList nList = null;
+    private void chooseDst() {
         try {
-
-            File fXmlFile = new File("/home/pmarko/Documents/fit/IJA/IJA/blockEditor.xml");
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = docFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-                    
-            doc.getDocumentElement().normalize();
-        
-            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-                    
-            nList = doc.getElementsByTagName("Block");
-        
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                Element elem = (Element) nNode;
-
-                Double X = new Double(elem.getAttribute("coordX"));
-                Double Y = new Double(elem.getAttribute("coordY"));
-
-                Class c = Class.forName("block_editor.blocks."+elem.getAttribute("className"));
-                Constructor<Block> ctor = c.getConstructor(String.class, Integer.class);
-                Block b = ctor.newInstance(elem.getAttribute("name"), actual_scheme.getBlockID());
-                canvas.getChildren().add(b.constructWindow(root, actual_scheme, b.getID(), X, Y));
-                actual_scheme.addBlock(b);
-                b.deserialize(elem, canvas);
-            }
-            PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.1));
-            final NodeList inList = nList;
-            pauseTransition.setOnFinished(event -> deserializeLines(inList));
-            pauseTransition.play();
+            FileChooser fileChooser = new FileChooser();
+            
+            File file = fileChooser.showSaveDialog(new Stage());
+            state.file = file.getAbsolutePath();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     private void GUI() {
+        state.scheme = new Scheme();
         // content
         grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -168,59 +133,34 @@ public class main extends Application {
             // TODO
             System.out.println("Item New Clicked");
             canvas.getChildren().clear(); // clear all visual blocks
-            actual_scheme.clear(); // clear all block objects in list
+            state.scheme.clear(root); // clear all block objects in list
+
+            root.getChildren().add(grid);
+            root.getChildren().add(canvas);
         });
 
         MenuItem itemOpen = new MenuItem("Open"); // ----------------------------------------------------- open
         itemOpen.setOnAction(e -> {
-            // TODO
-            // FileChooser fc = new FileChooser();
-            // // file = fc.showOpenDialog(primaryStage);
-            // file = fc.showOpenDialog(new Stage());
-            // if (file != null) {
-            //     try {
-            //         Desktop.getDesktop().open(file);
-            //     } catch (IOException ex) {
-            //         System.out.println("Error : opening file");
-            //     }
-            // }
-            deserialize();
+
+            canvas.getChildren().clear(); // clear all visual blocks
+            state.scheme.clear(root); // clear all block objects in list
+
+            root.getChildren().add(grid);
+            root.getChildren().add(canvas);
+            chooseSrc();
+            state.deserialize(root, canvas);
         });
-     
+        
         MenuItem itemSave = new MenuItem("Save"); // ----------------------------------------------------- save
         itemSave.setOnAction(e -> {
-
-            try {
-                DocumentBuilderFactory docFactory =  DocumentBuilderFactory.newInstance();
-                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                Document doc = docBuilder.newDocument();
-		        Element root = doc.createElement("blockEditor");
-		        doc.appendChild(root);
-                for (Block b : this.actual_scheme.getBlocks()) {
-                    b.serialize(doc, root);
-                }
-
-		        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		        Transformer transformer = transformerFactory.newTransformer();
-		        DOMSource source = new DOMSource(doc);
-		        StreamResult result = new StreamResult(new File("/home/pmarko/Documents/fit/IJA/IJA/blockEditor.xml"));
-
-		        // Output to console for testing
-		        // StreamResult result = new StreamResult(System.out);
-
-		        transformer.transform(source, result);
-
-		        System.out.println("File saved!");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-          
+            state.serialize();
             System.out.println("Item Save Clicked");
         });
 
         MenuItem itemSaveAs = new MenuItem("Save as"); // --------------------------------------------------- save as
         itemSaveAs.setOnAction(e -> {
-            // TODO
+            chooseDst();
+            state.serialize();
             System.out.println("Item Save as Clicked");
         });
 
@@ -228,14 +168,14 @@ public class main extends Application {
         itemPrint.setOnAction(e -> {
             // TODO
             System.out.println("Item Print Clicked");
-            actual_scheme.print(); // print actual scheme
+            state.scheme.print(); // print actual scheme
         });
 
         MenuItem itemCheck = new MenuItem("*Check"); // --------------------------------------------------- *check (debug)
         itemCheck.setOnAction(e -> {
             // TODO
             System.out.println("Item Check Clicked");
-            if(actual_scheme.checkCycles()){
+            if(state.scheme.checkCycles()){
                 System.out.println("No cycles detected."); 
             }
             else{
@@ -258,7 +198,7 @@ public class main extends Application {
         step.setOnAction(e -> {
             // TODO
             System.out.println("Step button");
-            actual_scheme.executeNext();
+            state.scheme.executeNext();
         });
         GridPane.setConstraints(step, 1, 0);
 
@@ -267,7 +207,7 @@ public class main extends Application {
         run.setOnAction(e -> {
             // TODO
             System.out.println("Run button");
-            actual_scheme.executeAll();
+            state.scheme.executeAll();
         });
         GridPane.setConstraints(run, 2, 0);
 

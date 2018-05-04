@@ -4,10 +4,11 @@ import javafx.scene.control.Label;
 import java.util.Map;
 import block_editor.types.*;
 
-public class Line {
-    private javafx.scene.shape.Line []visible = new javafx.scene.shape.Line[3];
-    private javafx.scene.shape.Line []transparent = new javafx.scene.shape.Line[3];
+public class Line implements java.io.Serializable {
+    private transient javafx.scene.shape.Line []visible = new javafx.scene.shape.Line[3];
+    private transient javafx.scene.shape.Line []transparent = new javafx.scene.shape.Line[3];
     private double startX, startY, endX, endY;
+    
     /**
      * \brief Constructor for creating line composed of multiple sublines
      */
@@ -29,6 +30,20 @@ public class Line {
         redraw();
     }
 
+    public void copy(Line copy) {
+        this.visible = new javafx.scene.shape.Line[3];
+        this.transparent = new javafx.scene.shape.Line[3];
+        for (int i = 0; i < this.visible.length; i++) {
+            // removeLine(copy.transparent[i]);
+            // removeLine(copy.visible[i]);
+            this.visible[i] = copy.visible[i];
+            this.transparent[i] = copy.transparent[i];
+        }
+        this.startX = copy.startX;
+        this.startY = copy.startY;
+        this.endX = copy.endX;
+        this.endY = copy.endY;
+    }
     /**
      * \brief Function for setting coordinates of line;
      * \param x1 x coordinat of start point
@@ -37,7 +52,7 @@ public class Line {
      * \param y2 y coordinat of end point
      * \param l line to which coordinates will be set
      */
-    private void setCoordinates(double x1, double y1, double x2, double y2, javafx.scene.shape.Line l) {
+    public void setCoordinates(double x1, double y1, double x2, double y2, javafx.scene.shape.Line l) {
         l.setStartX(x1);
         l.setStartY(y1);
         l.setEndX(x2);

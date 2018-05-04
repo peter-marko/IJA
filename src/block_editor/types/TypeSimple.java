@@ -5,7 +5,7 @@ public class TypeSimple extends Type {
     public TypeSimple(Integer block_id) {
         this.name = "Simple";
         this.set = false;
-        this.fromUser = false;
+        this.fromUser = 0;
         this.putVal("simple");
         this.ID = block_id;
     }

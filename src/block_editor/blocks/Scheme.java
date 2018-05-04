@@ -13,16 +13,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType; 
 import block_editor.types.*;
 
-public class Scheme {
+public class Scheme  implements java.io.Serializable {
     private LinkedList<Block> blocks; // strores block objects (instacies of Block class)
     //private LinkedList<Con> connections; // stores information about which blocks are connected to each other
     private Integer next_id; // actual ID value stored
     private LinkedList<Integer> queue; // queue with IDs of not computed blocks
     private boolean queue_set; // false if queue was not initialized
-    private Alert anyPrepared; // error mesage when there is no prepared block in scheme
-    private Alert allExecuted; // message when all block are computed
-    private Alert cycleFound; // message when cycle is detected
-    private Alert typeError; // message when incompatible types connection attempt
+    private String msgText;
 
     /**
      * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
@@ -34,21 +31,6 @@ public class Scheme {
         this.queue = new LinkedList<Integer>();
         this.queue_set = false;
 
-        this.anyPrepared = new Alert(AlertType.INFORMATION);
-        anyPrepared.setTitle("Block editor");
-        anyPrepared.setHeaderText("Any prepared block found!");
-        anyPrepared.setContentText("Program can't find block which could be computed. Ensure that every block is connected or has set input value.");
-        this.allExecuted = new Alert(AlertType.INFORMATION);
-        allExecuted.setTitle("Block editor");
-        allExecuted.setHeaderText("All block were successfully computed!");
-        allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
-        this.cycleFound = new Alert(AlertType.INFORMATION);
-        cycleFound.setTitle("Block editor");
-        cycleFound.setHeaderText("Connection was not made!");
-        cycleFound.setContentText("Connecting these blocks causes a cycle in scheme.");
-        this.typeError = new Alert(AlertType.INFORMATION);
-        typeError.setTitle("Block editor");
-        typeError.setHeaderText("Type error");
     }
 
     /**
@@ -71,14 +53,8 @@ public class Scheme {
     /**
      * \brief reinitializes scheme, all block and connections are deleted and next ID value is 1 again
      */
-    public void clear() {
-        for (Block b : this.blocks) {
-            for (Type t : b.getInputs()) {
-                for (Line l : t.getLines()) {
-                    l.remove();
-                }
-            }
-        }
+    public void clear(Pane root) {
+        root.getChildren().clear();
         this.blocks.clear();
         //this.connections.clear();
         next_id = 0;
@@ -93,7 +69,7 @@ public class Scheme {
         System.out.println("Scheme print:");
         System.out.println("  Blocks:");
         for (Block block : this.blocks) {
-            System.out.println("    " + block.getName() + " (" + block.getID() + ")");
+            // System.out.println("    " + block.getName() + " (" + block.getID() + ")");
             for (Integer id : block.getConnections()) {
                 System.out.println("        " + id);
             }
@@ -150,9 +126,13 @@ public class Scheme {
                 if (diff_x*diff_x + diff_y*diff_y < 200) {
                     // todo
                     Type dst = b.inputs.get(idx);
-                    if (dst.getName() == srcType.getName()) {
+                    if (srcType.getName().equals(dst.getName())) {
                         srcType.getAllDstID().addLast(b.getID());
                         if (this.checkCycles() == true) {
+                            System.out.println("get conn "+getBlockByID(srcID)+" srcID "+srcID);
+                            for (Block bl : getBlocks()) {
+                                System.out.println("blocks in "+bl.getID());
+                            }
                             getBlockByID(srcID).getConnections().remove(b.getID());
                             srcType.connect(dst, b.getID());
                         } else {
@@ -169,7 +149,7 @@ public class Scheme {
                         // connect and unconnect
                         return b.getID();
                     } else {
-                        msgTypeErrorSet("Types '"+dst.getName()+"' and '"+srcType.getName()+"' are not compatible");
+                        msgText = "Types '"+dst.getName()+"' and '"+srcType.getName()+"' are not compatible";
                         return -1;
                     }
                 }
@@ -274,7 +254,7 @@ public class Scheme {
      */
     public Block getBlockByID(Integer blockID){
         for (Block block : this.blocks) {
-            if(block.getID() == blockID)
+            if(block.getID().equals(blockID))
             {
                 return block;
             }
@@ -407,15 +387,13 @@ public class Scheme {
     /**
      * \brief Setting error message when incompatible type connection
      */
-    public void msgTypeErrorSet(String msgText) {
+    public void msgTypeError() {
+        Alert typeError; // message when incompatible types connection attempt
+        typeError = new Alert(AlertType.INFORMATION);
+        typeError.setTitle("Block editor");
+        typeError.setHeaderText("Type error");
         typeError.setContentText(msgText);
-    }
-    /**
-     * \brief shows dialog which says that selected ports cannot be connected because of incompatible types
-     */
-    public void msgTypeError()
-    {
-        this.typeError.showAndWait().ifPresent(rs -> {
+        typeError.showAndWait().ifPresent(rs -> {
             if (rs == ButtonType.OK) {}
         });
     }
@@ -425,7 +403,11 @@ public class Scheme {
      */
     public void msgAnyPrepared()
     {
-        this.anyPrepared.showAndWait().ifPresent(rs -> {
+        Alert anyPrepared = new Alert(AlertType.INFORMATION);
+        anyPrepared.setTitle("Block editor");
+        anyPrepared.setHeaderText("Any prepared block found!");
+        anyPrepared.setContentText("Program can't find block which could be computed. Ensure that every block is connected or has set input value.");
+        anyPrepared.showAndWait().ifPresent(rs -> {
             if (rs == ButtonType.OK) {}
         });
     }
@@ -435,7 +417,12 @@ public class Scheme {
      */
     public void msgAllExecuted()
     {
-        this.allExecuted.showAndWait().ifPresent(rs -> {
+        Alert allExecuted; // message when all block are computed
+        allExecuted = new Alert(AlertType.INFORMATION);
+        allExecuted.setTitle("Block editor");
+        allExecuted.setHeaderText("All block were successfully computed!");
+        allExecuted.setContentText("Clicking 'step' or 'run' button again will start new computation.");
+        allExecuted.showAndWait().ifPresent(rs -> {
             if (rs == ButtonType.OK) {}
         });
     }
@@ -445,7 +432,12 @@ public class Scheme {
      */
     public void msgCycleFound()
     {
-        this.cycleFound.showAndWait().ifPresent(rs -> {
+        Alert cycleFound; // message when cycle is detected
+        cycleFound = new Alert(AlertType.INFORMATION);
+        cycleFound.setTitle("Block editor");
+        cycleFound.setHeaderText("Connection was not made!");
+        cycleFound.setContentText("Connecting these blocks causes a cycle in scheme.");
+        cycleFound.showAndWait().ifPresent(rs -> {
             if (rs == ButtonType.OK) {}
         });
     }

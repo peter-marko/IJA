@@ -10,159 +10,21 @@ import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.scene.*;
 import javafx.scene.paint.*;
-import javafx.geometry.Bounds;
 import org.w3c.dom.*;
 import block_editor.blocks.*;
 import javafx.scene.shape.Circle;
 
-public abstract class Type implements TypeInterface {
+public abstract class Type implements TypeInterface, java.io.Serializable {
     protected String name;
     protected boolean set;
-    protected boolean fromUser;
-    protected Circle node;
+    protected int fromUser;
+    protected transient Circle node;
     protected LinkedList<Line> lines = new LinkedList();
     protected LinkedList<Type> dst = new LinkedList();   // connected to
     protected Integer ID; // ID of source block
     protected LinkedList<Integer> dstID = new LinkedList(); // ID of connected block
     protected Map<String, Double> items = new HashMap<String, Double>();
     
-    public void serialize(Document doc, Element root, int portIdx) {
-
-        Element currElem = doc.createElement("type");
-
-        String tmpStr = this.getClass().getName();
-        Attr attr = doc.createAttribute("className");
-        attr.setValue(tmpStr.substring(tmpStr.lastIndexOf(".") + 1));
-        currElem.setAttributeNode(attr);
-
-        attr = doc.createAttribute("IDX");
-        attr.setValue(Integer.toString(portIdx));
-        currElem.setAttributeNode(attr);
-
-        attr = doc.createAttribute("hash");
-        attr.setValue(Integer.toString(this.hashCode()));
-        currElem.setAttributeNode(attr);
-
-        attr = doc.createAttribute("set");
-        attr.setValue(Boolean.toString(set));
-        currElem.setAttributeNode(attr);
-
-        attr = doc.createAttribute("fromUser");
-        attr.setValue(Boolean.toString(fromUser));
-        currElem.setAttributeNode(attr);
-
-
-        int idx = 0;
-        for (Line l : lines) {
-            Element lineElem = doc.createElement("line");
-            attr = doc.createAttribute("IDX");
-            attr.setValue(Integer.toString(idx));
-            lineElem.setAttributeNode(attr);
-            attr = doc.createAttribute("startX");
-            attr.setValue(Integer.toString(l.hashCode()));
-            lineElem.setAttributeNode(attr);
-            attr = doc.createAttribute("startX");
-            attr.setValue(Double.toString(l.getStartX()));
-            lineElem.setAttributeNode(attr);
-            attr = doc.createAttribute("startY");
-            attr.setValue(Double.toString(l.getStartY()));
-            lineElem.setAttributeNode(attr);
-            attr = doc.createAttribute("endX");
-            attr.setValue(Double.toString(l.getEndX()));
-            lineElem.setAttributeNode(attr);
-            attr = doc.createAttribute("endY");
-            attr.setValue(Double.toString(l.getEndY()));
-            lineElem.setAttributeNode(attr);
-            currElem.appendChild(lineElem);
-            idx += 1;
-        }
-        idx = 0;
-        for (Type d : dst) {
-            Element dstElem = doc.createElement("dst");
-            attr = doc.createAttribute("IDX");
-            attr.setValue(Integer.toString(idx));
-            dstElem.setAttributeNode(attr);
-            attr = doc.createAttribute("hash");
-            attr.setValue(Integer.toString(d.hashCode()));
-            dstElem.setAttributeNode(attr);
-            currElem.appendChild(dstElem);
-            idx += 1;
-        }
-
-        idx = 0;
-        for (Integer i : dstID) {
-            Element dstIDElem = doc.createElement("dstID");
-            attr = doc.createAttribute("IDX");
-            attr.setValue(Integer.toString(idx));
-            dstIDElem.setAttributeNode(attr);
-            attr = doc.createAttribute("num");
-            attr.setValue(Integer.toString(i));
-            dstIDElem.setAttributeNode(attr);
-            currElem.appendChild(dstIDElem);
-            idx += 1;
-        }
-        idx = 0;
-        for (Map.Entry<String, Double> entry: this.items.entrySet()) {
-            Element entryElem = doc.createElement("entry");
-            attr = doc.createAttribute("IDX");
-            attr.setValue(Integer.toString(idx));
-            entryElem.setAttributeNode(attr);
-            attr = doc.createAttribute("key");
-            attr.setValue(entry.getKey());
-            entryElem.setAttributeNode(attr);
-            attr = doc.createAttribute("value");
-            if (entry.getValue() == null)
-                attr.setValue("null");
-            else
-                attr.setValue(Double.toString(entry.getValue()));
-            entryElem.setAttributeNode(attr);
-            currElem.appendChild(entryElem);
-            idx += 1;
-        }
-        root.appendChild(currElem);
-    }
-
-    public Type searchOppositeType(Scheme parent_scheme, NodeList nList, String blockIdx, String portIdx, Block curr) {
-        for (int i = 0; i < nList.getLength(); i++) {
-            org.w3c.dom.Node nNode = nList.item(i);
-            Element elem = (Element) nNode;
-            if (elem.getAttribute("id").equals(blockIdx)) {
-                NodeList inList = elem.getElementsByTagName("inputs");
-                org.w3c.dom.Node inNode = inList.item(0);
-                Element inElem = (Element) inNode;
-                inList = inElem.getElementsByTagName("type");
-                for (int temp = 0; temp < inList.getLength(); temp++) {
-                    inNode = inList.item(temp);
-                    inElem = (Element) inNode;
-                    if (inElem.getAttribute("IDX").equals(portIdx)) {
-                        Block oppBlock = parent_scheme.getBlocks().get(i);
-                        Type oppPort = oppBlock.getInputPort(temp);
-                        Bounds startBounds = this.getNode().localToScene(curr.getBorder().getBoundsInLocal());
-                        Bounds endBounds = oppPort.getNode().localToScene(oppBlock.getBorder().getBoundsInLocal());
-                        this.lines.addLast(new Line(startBounds.getMinX() + 5, startBounds.getMinY(),
-                        endBounds.getMinX() - 5, endBounds.getMinY()));
-                        this.connect(oppPort, oppBlock.getID());
-                    }
-                        // return parent_scheme.getBlocks().get(i).getInputPort(temp);
-                }
-            }
-        }
-        return null;
-    }
-
-    // public void deserializeIn(Element elem, Element root) {
-        
-    // }
-    public void deserializeOut(Scheme parent_scheme, NodeList nList, String blockIdx, String portIdx, Block curr) {
-        Type opposite = searchOppositeType(parent_scheme, nList, blockIdx, portIdx, curr);
-        // Bounds startBounds = this.getNode().localToScene(curr.getBorder().getBoundsInLocal());
-        // Bounds endBounds = this.getNode().localToScene(curr.getBorder().getBoundsInLocal());
-        // this.node.get
-        // Double startX
-        // this.lines.addLast(new Line());
-        // this.connect(opposite, opposite.ID);
-        // System.out.println("opposite "+opposite);
-    }
     public void clearValues() {
         for (Map.Entry<String, Double> entry: this.items.entrySet()) {
             entry.setValue(null);
@@ -214,7 +76,7 @@ public abstract class Type implements TypeInterface {
      * \param dst_block_id ID of block to which is port connected
      */
     public void connect(Type dst, Integer dst_block_id) {
-        dst.fromUser = false;
+        dst.fromUser = 1;
         if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);
@@ -288,13 +150,18 @@ public abstract class Type implements TypeInterface {
         return this.set;
     }
     public boolean isFromUser(){
+        if (fromUser != 0)
+            return true;
+        return false;
+    }
+    public void setFromUser(Integer val){
+        this.fromUser = val;
+    }
+    public Integer getFromUser(){
         return this.fromUser;
     }
-    public void setFromUser(){
-        this.fromUser = true;
-    }
     public void unsetFromUser(){
-        this.fromUser = false;
+        this.fromUser = 0;
     }
     public void set(boolean set) {
         this.set = set;

@@ -30,13 +30,27 @@ import org.w3c.dom.*;
 import java.lang.reflect.Constructor;
 import block_editor.types.*;
 
-public abstract class Block implements BlockInterface {
+public abstract class Block implements BlockInterface, java.io.Serializable {
     protected Scheme parentScheme;
     protected Integer id;
     protected String name;
     protected LinkedList<Type> inputs = new LinkedList();
     protected LinkedList<Type> outputs = new LinkedList();
-    protected BorderPane border;
+    protected transient BorderPane border;
+    protected double x;
+    protected double y;
+
+    public double getX() {
+        return this.x;
+    }
+    public double getY() {
+        return this.y;
+    }
+    public void serialize() {
+        Bounds bounds = this.border.localToScene(this.border.getBoundsInLocal());
+        this.x = bounds.getMinX();
+        this.y = bounds.getMinY();
+    }
 
     protected void newPort(GridPane parentGrid, Type next, int row, int col, Pane canvas) {
         GridPane portGrid = new GridPane();
@@ -48,6 +62,7 @@ public abstract class Block implements BlockInterface {
         portGrid.setConstraints(circle, 0, 1);
         parentGrid.setConstraints(portGrid, col, row);
         parentGrid.getChildren().addAll(portGrid);
+        setValue(circle, portGrid, next);
         next.setNode(circle);
         if (col == 0)
             this.setValue(circle, portGrid, next);
@@ -56,94 +71,12 @@ public abstract class Block implements BlockInterface {
             portGrid.setHalignment(circle, HPos.RIGHT);
             lineFromCircle(circle, canvas, next);
         }
-    }
+        if (next.getFromUser() == 1 && !next.isSet()) {
+            getUserInput(next.getNode(), portGrid, next, true);
 
-    public void serialize(Document doc, Element root) {
-        Element currElem = doc.createElement("Block");
-        // set attribute id
-        Attr attr = doc.createAttribute("id");
-        attr.setValue(id.toString());
-        currElem.setAttributeNode(attr);
-        // write the content into xml file
-        
-        attr = doc.createAttribute("name");
-        attr.setValue(name);
-        currElem.setAttributeNode(attr);
-        
-        String tmpStr = this.getClass().getName();
-        attr = doc.createAttribute("className");
-        attr.setValue(tmpStr.substring(tmpStr.lastIndexOf(".") + 1));
-        currElem.setAttributeNode(attr);
-
-        Bounds bounds = this.border.localToScene(this.border.getBoundsInLocal());
-        attr = doc.createAttribute("coordX");
-        attr.setValue(Double.toString(bounds.getMinX()));
-        currElem.setAttributeNode(attr);
-        attr = doc.createAttribute("coordY");
-        attr.setValue(Double.toString(bounds.getMinY() - 40));
-        currElem.setAttributeNode(attr);
-
-        Element in = doc.createElement("inputs");
-        int idx = 0;
-        for (Type t: inputs) {
-            t.serialize(doc, in, idx);
-            idx += 1;
-        }
-        currElem.appendChild(in);
-        Element out = doc.createElement("outputs");
-        idx = 0;
-        for (Type t: outputs) {
-            t.serialize(doc, out, idx);
-            idx += 1;
-        }
-        currElem.appendChild(out);
-        root.appendChild(currElem);
-    }
-
-    private Type typeInstantiate(NodeList nList, int idx) {
-        Type t = null;
-        try {
-            Node nNode = nList.item(idx);
-            Element inElem = (Element) nNode;
-            Class c = Class.forName("block_editor.types."+inElem.getAttribute  ("className"));
-            Constructor<Type> ctor = c.getConstructor(Integer.class);
-            t = ctor.newInstance(this.id);
-            inputs.addLast(t);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return t;
-    }
-    public void deserialize(Element elem, Pane canvas) {
-        this.id = Integer.valueOf(elem.getAttribute("id"));
-        // clear inside of block
-        GridPane parentGrid = (GridPane)this.inputs.getFirst().getNode().getParent().getParent();
-        parentGrid.getChildren().clear();
-        this.inputs.clear();
-        this.outputs.clear();
-
-        // add to gridpane
-        NodeList nList = elem.getElementsByTagName("inputs");
-        Node nNode = nList.item(0);
-        Element inElem = (Element) nNode;
-        nList = inElem.getElementsByTagName("type");
-        for (int idx = 0; idx < nList.getLength(); idx++) {
-            Type t = typeInstantiate(nList, idx);
-            // t.deserializeIn(inElem, elem);
-            newPort(parentGrid, t, idx, 0, null);
-            this.inputs.addLast(t);
-        }
-        nList = elem.getElementsByTagName("outputs");
-        nNode = nList.item(0);
-        inElem = (Element) nNode;
-        nList = inElem.getElementsByTagName("type");
-        for (int idx = 0; idx < nList.getLength(); idx++) {
-            Type t = typeInstantiate(nList, idx);
-            // t.deserializeOut(inElem, elem);
-            newPort(parentGrid, t, idx, 1, canvas);
-            this.outputs.addLast(t);
         }
     }
+
     /**
      * \brief Function for actualization of visual block, when added inputText, for user input
      * \param pause wait few milliseconds for scene to be redrawn, then actualize
@@ -158,8 +91,11 @@ public abstract class Block implements BlockInterface {
             Bounds boundsInBorder = type.getNode().localToScene(this.border.getBoundsInLocal());
             if (!inputs.isEmpty()) {
                 for (Line l : type.getLines()) {
+                    Bounds boundsOpposite = type.getDst().get(0).getNode().localToScene(this.border.getBoundsInLocal());
                     l.setEndX(boundsInBorder.getMinX() - 5);
                     l.setEndY(boundsInBorder.getMinY());
+                    l.setStartX(boundsOpposite.getMinX() + 5);
+                    l.setStartY(boundsOpposite.getMinY());
                 }
             }
         }
@@ -171,15 +107,19 @@ public abstract class Block implements BlockInterface {
             }
         }
     }
-    protected void getUserInput(Circle circle, GridPane portGrid, Type type) {
-        type.setFromUser();
-        type.clearValues();
+    protected void getUserInput(Circle circle, GridPane portGrid, Type type, Boolean load) {
+        if (!load) {
+            type.setFromUser(1);
+            type.clearValues();
+        }
         int idx = 2;
         for (Map.Entry<String, Double> entry: type.getItems().entrySet()) {
 
             // clearing old line if they existed
-            for (Type dst : type.getDst()) {
-                dst.clearDst(type);
+            if (!load) {
+                for (Type dst : type.getDst()) {
+                    dst.clearDst(type);
+                }
             }
             type.set(false);
             // Label label = new Label(entry.getKey());
@@ -187,9 +127,13 @@ public abstract class Block implements BlockInterface {
             text.setPromptText(entry.getKey());
             text.setStyle("-fx-font: 11 arial;");
             text.setPrefWidth(60);
+            if (load && entry.getValue() != null) {
+                text.setText(entry.getValue().toString());
+            }
             portGrid.setConstraints(text, 0, idx);
             portGrid.getChildren().add(text);
-            lineActualize(1);
+            if (!load)
+                lineActualize(1);
             idx += 1;
             // todo aktualizovat vsetky pozicie ciar v tomto bloku
             text.textProperty().addListener((obs, oldText, newText) -> {
@@ -212,8 +156,8 @@ public abstract class Block implements BlockInterface {
      */
     protected void setValue(Circle circle, GridPane portGrid, Type type) {
         circle.setOnMouseClicked(e -> {
-            if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2 && (!type.isFromUser() || !type.isSet())){
-                getUserInput(circle, portGrid, type);
+            if(e.getButton().equals(javafx.scene.input.MouseButton.PRIMARY) && e.getClickCount() == 2){
+                getUserInput(circle, portGrid, type, false);
             }
         });
     }
@@ -434,16 +378,15 @@ public abstract class Block implements BlockInterface {
         return this.outputs.get(n);
     }
 
-    public LinkedList<Type> getOutputs() {
-        return this.outputs;
-    }
-
     public Type getInputPort(int n) {
         return this.inputs.get(n);
     }
 
     public LinkedList<Type> getInputs() {
         return this.inputs;
+    }
+    public LinkedList<Type> getOutputs() {
+        return this.outputs;
     }
 
     public String getName() {
