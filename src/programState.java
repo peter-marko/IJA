@@ -19,7 +19,6 @@ public class programState implements java.io.Serializable {
      * \brief Function which prepares serialization
      */
     public void serialize() {
-        String file = null;
         scheme.print();
         try {
             for (Block b : scheme.getBlocks()) {
@@ -27,6 +26,7 @@ public class programState implements java.io.Serializable {
             }
             FileOutputStream fileOut = new FileOutputStream(file);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            String file = null;
             out.writeObject(this);
             out.close();
             fileOut.close();
