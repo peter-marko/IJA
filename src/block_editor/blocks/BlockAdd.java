@@ -16,15 +16,9 @@ public class BlockAdd extends Block {
         Type i2 = inputs.get(1);
         double output = i1.getVal("simple") + i2.getVal("simple");
         // this.outputs.get(0).putVal("simple", output);
-
-        for (Type dst : outputs.get(0).getDst()) {
-            if (dst != null)
-                dst.putVal("simple", output);
-            System.out.println("propagujem\n");    
-        }
-        for (Type cur : outputs) {
-            cur.putVal("simple", output);
-        }
+        Type cur = outputs.getFirst();
+        cur.putVal("simple", output);
+        cur.step();
         this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
         this.showValues();

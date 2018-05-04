@@ -2,6 +2,8 @@ package block_editor.blocks;
 
 import javafx.scene.paint.Color;
 import javafx.scene.layout.GridPane;
+
+import java.util.LinkedList;
 import java.util.Map;
 import javafx.scene.shape.Circle;
 import javafx.scene.control.Label;
@@ -48,8 +50,6 @@ public class BlockCenterOfGravity extends Block {
     public void execute () {
         double sumX = 0;
         double sumY = 0;
-        double resX = 0;
-        double resY = 0;
         int numOfPoints = 0;
         for (java.util.Iterator<Type> it = this.inputs.iterator(); it.hasNext();) {
             Type input = it.next();
@@ -59,19 +59,10 @@ public class BlockCenterOfGravity extends Block {
                 numOfPoints += 1;
             }
         }
-        resX = sumX/numOfPoints;
-        resY = sumY/numOfPoints;
-        // for (Type input : inputs) {
-        // }
-        for (Type dst : outputs.get(0).getDst()) {
-            dst.putVal("x", resX);
-            dst.putVal("y", resY);
-        }
-        for (Type cur : outputs) {
-            cur.putVal("x", resX);
-            cur.putVal("y", resY);
-        }
-
+        Type cur = outputs.getFirst();
+        cur.putVal("x", sumX/numOfPoints);
+        cur.putVal("y", sumY/numOfPoints);
+        cur.step();
         this.setShadow(Color.GREEN);
         this.showValues();
     }

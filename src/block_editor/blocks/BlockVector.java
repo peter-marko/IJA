@@ -16,14 +16,10 @@ public class BlockVector extends Block {
         Type i2 = inputs.get(1);
         double output_x = i2.getVal("x") - i1.getVal("x");
         double output_y = i2.getVal("y") - i1.getVal("y");
-        for (Type dst : outputs.get(0).getDst()) {
-            dst.putVal("x", output_x);
-            dst.putVal("y", output_y);
-        }
-        for (Type cur : outputs) {
-            cur.putVal("x", output_x);
-            cur.putVal("y", output_y);
-        }
+        Type cur = outputs.getFirst();
+        cur.putVal("x", output_x);
+        cur.putVal("y", output_y);
+        cur.step();
         this.setShadow(Color.GREEN);
         System.out.println("final output x:"+ output_x + ", y:" + output_y);
         this.showValues();

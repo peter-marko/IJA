@@ -45,16 +45,16 @@ public class BlockSum extends Block {
 
     public void execute () {
         double sum = 0;
-        for (Type input : inputs) {
-            sum += input.getVal("simple");
-        }
-        for (Type dst : outputs.get(0).getDst()) {
-            dst.putVal("simple", sum);
-        }
-        for (Type cur : outputs) {
-            cur.putVal("simple", sum);
-        }
 
+        for (java.util.Iterator<Type> it = this.inputs.iterator(); it.hasNext();) {
+            Type input = it.next();
+            if (it.hasNext()) {
+                sum += input.getVal("simple");
+            }
+        }
+        Type cur = outputs.getFirst();
+        cur.putVal("simple", sum);
+        cur.step();
         this.setShadow(Color.GREEN);
         this.showValues();
     }

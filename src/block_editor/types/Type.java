@@ -76,7 +76,7 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
      * \param dst_block_id ID of block to which is port connected
      */
     public void connect(Type dst, Integer dst_block_id) {
-        dst.status = 1;
+        dst.status = 0;
         if (dst.dst.isEmpty() == false)
             dst.dst.getFirst().clearDst(dst);
             // dst.clearDst(null);

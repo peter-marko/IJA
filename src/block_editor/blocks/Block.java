@@ -161,10 +161,11 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
                 try {
                     entry.setValue(Double.parseDouble(newText));
                     text.setStyle("-fx-text-fill: black; -fx-font: 11 arial;");
-                    parentScheme.setBlockAsChanged(this.id);
                 } catch (Exception exception) {
                     text.setStyle("-fx-text-fill: red; -fx-font: 11 arial;");
+                    entry.setValue(null);
                 }
+                parentScheme.setBlockAsChanged(this.id);
             });
         }
     }
