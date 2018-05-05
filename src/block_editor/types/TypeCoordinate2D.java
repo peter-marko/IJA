@@ -11,8 +11,8 @@ public class TypeCoordinate2D extends Type {
     }
 
     /**
-     * \brief checks if port has set value
-     * \return true if value is set, false if port value is null 
+     *  checks if port has set value
+     * @return true if value is set, false if port value is null 
      */
     public boolean isPrepared() {
         if(this.items.get("x") != null && this.items.get("y") != null)
@@ -23,7 +23,7 @@ public class TypeCoordinate2D extends Type {
     }
 
     /**
-     * \brief sets all values to null
+     *  sets all values to null
      */
     public void deleteValues() {
         this.items.clear();

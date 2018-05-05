@@ -31,8 +31,8 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
         }
     }
     /**
-     * \brief Function for clearing output port
-     * \param type if null whole port is cleared
+     *  Function for clearing output port
+     * @param type if null whole port is cleared
      * if set than cleared only connection pointing to type
      */
     public void clearDst(Type type) {
@@ -71,9 +71,9 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
         this.set = false;
     }
     /**
-     * \brief Set connection variable dst and checks types
-     * \param dst output type, connection to other block
-     * \param dst_block_id ID of block to which is port connected
+     *  Set connection variable dst and checks types
+     * @param dst output type, connection to other block
+     * @param dst_block_id ID of block to which is port connected
      */
     public void connect(Type dst, Integer dst_block_id) {
         dst.status = 0;
@@ -101,7 +101,7 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
     }
 
     /**
-     * \brief Propagates values to dst
+     *  Propagates values to dst
      */
     public void step () {
         // type check + data transfer

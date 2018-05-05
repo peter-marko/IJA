@@ -22,7 +22,7 @@ public class Scheme  implements java.io.Serializable {
     private String msgText;
 
     /**
-     * \brief Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
+     *  Scheme constructor. Initializes empty lists and sets actual ID to zero (first will be 1)
      */
     public Scheme() {
         this.blocks = new LinkedList<Block>();
@@ -34,8 +34,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief gets new uniqe block ID value in scheme
-     * \return ID value for next block
+     *  gets new uniqe block ID value in scheme
+     * @return ID value for next block
      */
     public Integer getBlockID() {
         this.next_id++;
@@ -43,15 +43,16 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief add new block to scheme
-     * \param block Block class object to store
+     *  add new block to scheme
+     * @param block Block class object to store
      */
     public void addBlock(Block block) {
         this.blocks.add(block);
     }
 
     /**
-     * \brief reinitializes scheme, all block and connections are deleted and next ID value is 1 again
+     *  reinitializes scheme, all block and connections are deleted and next ID value is 1 again
+     * @param root Pane containing every visual object
      */
     public void clear(Pane root) {
         root.getChildren().clear();
@@ -63,7 +64,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief prints actual Scheme state into console
+     *  prints actual Scheme state into console
      */
     public void print() {
         System.out.println("Scheme print:");
@@ -88,8 +89,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief removes block from scheme
-     * \param id ID of block which should be deleted
+     *  removes block from scheme
+     * @param id ID of block which should be deleted
      */
     public void deleteBlock(Integer id) {
         Integer i = 0;
@@ -108,10 +109,12 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief search block which has port in specified location
-     * \param x,y coordinates where block is supposed to be
-     * \param srcType data type which port should have
-     * \return ID of found block
+     *  search block which has port in specified location
+     * @param x coordinate where block is supposed to be
+     * @param y coordinate where block is supposed to be
+     * @param srcType data type which port should have
+     * @param srcID ID of searched block
+     * @return ID of found block
      */
     public Integer searchBlock(double x, double y, Type srcType, int srcID) {
         Line l = srcType.getLines().getLast();
@@ -160,10 +163,10 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief stores information about connection into Scheme class
-     * \param srcBlockID ID of source block
-     * \param dstBlockID ID of destination block
-     * \return true on success, false otherwise
+     *  stores information about connection into Scheme class
+     * @param srcBlockID ID of source block
+     * @param dstBlockID ID of destination block
+     * @return true on success, false otherwise
      */
     public Boolean connect(Integer srcBlockID, Integer dstBlockID){
         //Con new_con = new Con();
@@ -180,9 +183,9 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief deletes connection between two blocks
-     * \param srcBlockID ID of source block
-     * \param dstBlockID ID of destination block
+     *  deletes connection between two blocks
+     * @param srcBlockID ID of source block
+     * @param dstBlockID ID of destination block
      */
     /*public void unconnect(Integer srcBlockID, Integer dstBlockID){
         for (Con connection : this.connections) {
@@ -195,8 +198,8 @@ public class Scheme  implements java.io.Serializable {
     }*/
 
     /**
-     * \brief checks if scheme contains cycles - calls recursive function for every block in Scheme
-     * \return true if scheme is ok, false if cycle is detected
+     *  checks if scheme contains cycles - calls recursive function for every block in Scheme
+     * @return true if scheme is ok, false if cycle is detected
      */
     public boolean checkCycles(){
         for (Block block : this.blocks) {
@@ -208,10 +211,10 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief checks if actual block was already visited and calls same function for all following blocks
-     * \param blockID ID of actual block
-     * \param visited List containing ID of blocks which was already visited
-     * \return true if everything is ok, false if this block was already visited or if false is returned from following block
+     *  checks if actual block was already visited and calls same function for all following blocks
+     * @param blockID ID of actual block
+     * @param visited List containing ID of blocks which was already visited
+     * @return true if everything is ok, false if this block was already visited or if false is returned from following block
      */
     public boolean checkCyclesRecursive(Integer blockID, LinkedList<Integer> visited){
         System.out.println("cc: (block " + blockID + ")   visited: " + visited);
@@ -248,9 +251,9 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief finds block with given ID
-     * \param blockID ID of serched block
-     * \return searched block
+     *  finds block with given ID
+     * @param blockID ID of serched block
+     * @return searched block
      */
     public Block getBlockByID(Integer blockID){
         for (Block block : this.blocks) {
@@ -267,7 +270,7 @@ public class Scheme  implements java.io.Serializable {
     }
     
     /**
-     * \brief loads block IDs to queue
+     *  loads block IDs to queue
      */
     public void loadQueue(){
         for (Block block : this.blocks) {
@@ -277,8 +280,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief adds block ID into queue
-     * \block_id ID of added block
+     *  adds block ID into queue
+     *  @param block_id ID of added block
      */
     public void addIntoQueue(Integer block_id){
         if(this.queue_set){
@@ -289,8 +292,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief removes block with given ID from queue
-     * \block_id ID of deleted block
+     *  removes block with given ID from queue
+     *  @param block_id ID of deleted block
      */
     public void deleteFromQueue(Integer block_id){
         if(this.queue_set){
@@ -307,8 +310,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief sets block with given ID as changed, load him into queue for computation and recursively calls this function for all his successors
-     * \param block_id id of block with changed value
+     *  sets block with given ID as changed, load him into queue for computation and recursively calls this function for all his successors
+     * @param block_id id of block with changed value
      */
     public void setBlockAsChanged(Integer block_id) {
         this.addIntoQueue(block_id);
@@ -325,8 +328,8 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief finds next prepared block in queue and execute him
-     * \return true if computation should continue, false if queue is empty (all block were computed) or some value is missing
+     *  finds next prepared block in queue and execute him
+     * @return true if computation should continue, false if queue is empty (all block were computed) or some value is missing
      */
     public boolean executeNext(){
         if(this.queue_set == false)
@@ -363,7 +366,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief executes all blocks in scheme
+     *  executes all blocks in scheme
      */
     public void executeAll()
     {
@@ -374,7 +377,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief reset all computed values
+     *  reset all computed values
      */
     public void resetComputation()
     {
@@ -385,7 +388,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief Setting error message when incompatible type connection
+     *  Setting error message when incompatible type connection
      */
     public void msgTypeError() {
         Alert typeError; // message when incompatible types connection attempt
@@ -399,7 +402,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief shows dialog which says that no prepared block was found
+     *  shows dialog which says that no prepared block was found
      */
     public void msgAnyPrepared()
     {
@@ -413,7 +416,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief shows dialog which says that all blocks were executed
+     *  shows dialog which says that all blocks were executed
      */
     public void msgAllExecuted()
     {
@@ -428,7 +431,7 @@ public class Scheme  implements java.io.Serializable {
     }
 
     /**
-     * \brief shows dialog which says that connection was not made due to cycle
+     *  shows dialog which says that connection was not made due to cycle
      */
     public void msgCycleFound()
     {

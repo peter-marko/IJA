@@ -46,10 +46,10 @@ public class main extends Application {
         primaryStage.show();
     }
     /**
-     * \brief Function for addin new blocks into menu
-     * \param name Class name of new block, located in block_editor.blocks.
-     * \param subName Name of block in GUI and menu
-     * \param menuBlock panel containing menus
+     *  Function for addin new blocks into menu
+     * @param name Class name of new block, located in block_editor.blocks.
+     * @param subName Name of block in GUI and menu
+     * @param menuBlock panel containing menus
      */
     private void addBlockToMenu(String name, String subName, Menu menuBlock) {
         name = "block_editor.blocks."+name;

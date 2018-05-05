@@ -45,13 +45,9 @@
 <target name="main" depends="compile, jar">
   <description>Main target</description>
 </target>
-<!-- 
-<target name="run" depends="compile">
-  <description>Test target</description>
-  <exec executable="/build/sh">
-    <arg value="-c" />
-    <arg value="cd build;java -cp .:../lib/junit-4.12.jar:../lib/hamcrest-core-1.3.jar:repository.jar org.junit.runner.JUnitCore block_editor.TestUkol2; cd -" />
-  </exec>
-</target> -->
 
+  <target name="doc" description="generate documentation">
+    <javadoc sourcepath="${src.dir}" destdir="${docs.dir}">
+    </javadoc>
+  </target>
 </project>

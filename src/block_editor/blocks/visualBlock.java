@@ -36,10 +36,10 @@ public class visualBlock extends Region {
         });
     }
     /**
-     * \brief Function used for setting coordinates of lines when visual block changed position
-     * \param block Metadata about currently moved block
-     * \param x_diff X position chage
-     * \param y_diff y position chage
+     *  Function used for setting coordinates of lines when visual block changed position
+     * @param block Metadata about currently moved block
+     * @param x_diff X position chage
+     * @param y_diff y position chage
      */
     void update_lines(Block block, double x_diff, double y_diff) {
         for (Type t : block.inputs) {
@@ -61,8 +61,8 @@ public class visualBlock extends Region {
     }
 
     /**
-     * \brief Function for removing connections from block
-     * \param block specifies connection of which block should be cleares
+     *  Function for removing connections from block
+     * @param block specifies connection of which block should be cleares
      */
     // this function is used when erasing block
     public void remove_lines(Block block) {
@@ -81,10 +81,10 @@ public class visualBlock extends Region {
         }
     }
     /**
-     * \brief Implements, that user can drag visualBlock within canvas
-     * \param what Determines which part should react for drag, eg. title_bar, not entire visualBlock
-     * \param canvas Space where is drawn visualWindow, determines boundries even when user expands vindow
-     * \param block Metadata about currently moved block
+     *  Implements, that user can drag visualBlock within canvas
+     * @param what Determines which part should react for drag, eg. title_bar, not entire visualBlock
+     * @param canvas Space where is drawn visualWindow, determines boundries even when user expands vindow
+     * @param block Metadata about currently moved block
      */
     public void makeDragable(Node what, Pane canvas, Block block) {
         final Delta dragDelta = new Delta();
@@ -118,14 +118,14 @@ public class visualBlock extends Region {
             update_lines(block, final_x - getLayoutX(), final_y - getLayoutY());
             setLayoutX(final_x);
             setLayoutY(final_y);
-            // todo
         });
     }
 
     /**
-     * \brief Funcion sets this button to remove and disconnect, current visualBlock
-     * \param canvas space where is current block located
-     * \param bloc Metadata corresponding to this visualBlock
+     *  Funcion sets this button to remove and disconnect, current visualBlock
+     * @param btn Button, which should be set for clearing window
+     * @param canvas space where is current block located
+     * @param block Metadata corresponding to this visualBlock
      */
     public void setCloseButton(Button btn, Pane canvas, Block block) {
         btn.setOnMouseClicked(event -> {
@@ -135,10 +135,6 @@ public class visualBlock extends Region {
                 this.parent_scheme.deleteBlock(this.getBlockID());
                 ((Pane) getParent()).getChildren().remove(this);
                 block.clear();
-            } 
-            // temporal part for debugging right click executes window
-            else {
-                block.execute();
             }
         });
     }

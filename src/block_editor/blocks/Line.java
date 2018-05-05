@@ -10,7 +10,11 @@ public class Line implements java.io.Serializable {
     private double startX, startY, endX, endY;
     
     /**
-     * \brief Constructor for creating line composed of multiple sublines
+     *  Constructor for creating line composed of multiple sublines
+     * @param startX start point X coordinate of new line
+     * @param startY start point Y coordinate of new line
+     * @param endX end point X coordinate of new line
+     * @param endY end point Y coordinate of new line
      */
     public Line(double startX, double startY, double endX, double endY) {
         for (int i = 0; i < this.visible.length; i++) {
@@ -29,13 +33,14 @@ public class Line implements java.io.Serializable {
         System.out.println("coord endY "+this.endY);
         redraw();
     }
-
+    /**
+     * Fill this line with information from other line
+     * @param copy source line which information is being transfered
+     */
     public void copy(Line copy) {
         this.visible = new javafx.scene.shape.Line[3];
         this.transparent = new javafx.scene.shape.Line[3];
         for (int i = 0; i < this.visible.length; i++) {
-            // removeLine(copy.transparent[i]);
-            // removeLine(copy.visible[i]);
             this.visible[i] = copy.visible[i];
             this.transparent[i] = copy.transparent[i];
         }
@@ -45,12 +50,12 @@ public class Line implements java.io.Serializable {
         this.endY = copy.endY;
     }
     /**
-     * \brief Function for setting coordinates of line;
-     * \param x1 x coordinat of start point
-     * \param y1 y coordinat of start point
-     * \param x2 x coordinat of end point
-     * \param y2 y coordinat of end point
-     * \param l line to which coordinates will be set
+     *  Function for setting coordinates of line;
+     * @param x1 x coordinat of start point
+     * @param y1 y coordinat of start point
+     * @param x2 x coordinat of end point
+     * @param y2 y coordinat of end point
+     * @param l line to which coordinates will be set
      */
     public void setCoordinates(double x1, double y1, double x2, double y2, javafx.scene.shape.Line l) {
         l.setStartX(x1);
@@ -59,7 +64,7 @@ public class Line implements java.io.Serializable {
         l.setEndY(y2);
     }
     /**
-     * \brief Function for redrawing lines of current connection
+     *  Function for redrawing lines of current connection
      */
     private void redraw() {
         double offset = this.transparent[0].getStrokeWidth();
@@ -83,13 +88,13 @@ public class Line implements java.io.Serializable {
         setCoordinates(centerX, endY, endX, endY, visible[2]);
     }
     /**
-     * \brief Function for creating new Visible line
+     *  Function for creating new Visible line
      */
     private javafx.scene.shape.Line newVisible() {
         return new javafx.scene.shape.Line();
     }
     /**
-     * \brief Function for creating new transparent line
+     *  Function for creating new transparent line
      */
     private javafx.scene.shape.Line newTransparent() {
         javafx.scene.shape.Line l = new javafx.scene.shape.Line();
@@ -99,47 +104,72 @@ public class Line implements java.io.Serializable {
     }
     /**
      * Function for adding new lines into global Pane canvas
+     * @param canvas global pane for drawing lines
      */
     public void addAll(javafx.scene.layout.Pane canvas) {
         canvas.getChildren().addAll(visible[1], visible[2], visible[0], transparent[1], transparent[2], transparent[0]);
     }
+    /**
+     * @param X Set starting point of this line x coordinate
+     */
     public void setStartX(double X) {
         this.startX = X;
         redraw();
     }
+    /**
+     * @param Y Set starting point of this line y coordinate
+     */
     public void setStartY(double Y) {
         this.startY = Y;
         redraw();
     }
+    /**
+     * @param X Set end point of this line x coordinate
+     */
     public void setEndX(double X) {
         this.endX = X;
         redraw();
     }
+    /**
+     * @param Y Set end point of this line y coordinate
+     */
     public void setEndY(double Y) {
         this.endY = Y;
         redraw();
     }
+    /**
+     * @return starting point of this line x 
+     */
     public double getStartX() {
         return startX;
     }
+    /**
+     * @return starting point of this line y 
+     */
     public double getStartY() {
         return startY;
     }
+    /**
+     * @return end point of this line x coordinate
+     */
     public double getEndX() {
         return endX;
     }
+    /**
+     * @return end point of this line y coordinate
+     */
     public double getEndY() {
         return endY;
     }
 
     /**
-     * \brief Reomoves sub line from parent pane canvas
+     *  Reomoves sub line from parent pane canvas
      */
     private void removeLine(javafx.scene.shape.Line l) {
         ((javafx.scene.layout.Pane) l.getParent()).getChildren().remove(l);
     }
     /**
-     * \brief Removes all sub lines from this connection
+     *  Removes all sub lines from this connection
      */
     public void remove() {
         for (javafx.scene.shape.Line line : this.visible) {
@@ -152,10 +182,10 @@ public class Line implements java.io.Serializable {
         }
     }
     /**
-     * \brief Show label when mouse inside visible line
-     * \param e Mouse event
-     * \param label Label for showing information about connection status
-     * \param type Contains informatio about connection
+     *  Show label when mouse inside visible line
+     * @param e Mouse event
+     * @param label Label for showing information about connection status
+     * @param type Contains informatio about connection
      */
     private void mouseEntered(javafx.scene.input.MouseEvent e, Label label, Type type) {
         label.setLayoutX(e.getX()); 
@@ -172,8 +202,9 @@ public class Line implements java.io.Serializable {
         label.toFront();
     }
     /**
-     * \brief Function for showing information about connection
-     * \param type Contains informatio about connection
+     *  Function for showing information about connection
+     * @param type Contains informatio about connection
+     * @return Label displaying status information about line
      */
     public Label enableStatusDisplay(Type type) {
         Label label = new Label();

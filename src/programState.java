@@ -8,7 +8,7 @@ import java.util.Iterator;
 import block_editor.blocks.*;
 import block_editor.types.*;
 /**
- * \brief Class for holding information about whole program
+ *  Class for holding information about whole program
  * this class is used for serialization
  */
 public class programState implements java.io.Serializable {
@@ -16,7 +16,7 @@ public class programState implements java.io.Serializable {
     public Scheme scheme;
     
     /**
-     * \brief Function which prepares serialization
+     *  Function which prepares serialization
      */
     public void serialize() {
         scheme.print();
@@ -35,10 +35,10 @@ public class programState implements java.io.Serializable {
         }
     }
     /**
-     * \brief Function which actualizes lines in ports after deserialization
-     * \param t current port
-     * \param canvas pane which will hold this line
-     * \param in true when this line is from input, false otherwise
+     *  Function which actualizes lines in ports after deserialization
+     * @param t current port
+     * @param canvas pane which will hold this line
+     * @param in true when this line is from input, false otherwise
      */
     private void actualizeLine(Type t, Pane canvas, boolean in) {
         Iterator<Line> iter = t.getLines().iterator();
@@ -74,9 +74,9 @@ public class programState implements java.io.Serializable {
 
     }
     /**
-     * \brief Function for deserialization of program state
-     * \param root main pane in window
-     * \param canvas user working pane
+     *  Function for deserialization of program state
+     * @param root main pane in window
+     * @param canvas user working pane
      */
     public void deserialize(Pane root, Pane canvas) {
         try {
