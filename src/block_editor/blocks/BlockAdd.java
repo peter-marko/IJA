@@ -15,10 +15,12 @@ public class BlockAdd extends Block {
         Type i1 = inputs.get(0);
         Type i2 = inputs.get(1);
         double output = i1.getVal("simple") + i2.getVal("simple");
-        // this.outputs.get(0).putVal("simple", output);
+
         Type cur = outputs.getFirst();
         cur.putVal("simple", output);
         cur.step();
+
+
         this.setShadow(Color.GREEN);
         System.out.println("final output "+output);
         this.showValues();

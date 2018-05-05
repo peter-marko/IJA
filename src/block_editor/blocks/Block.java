@@ -59,11 +59,10 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
      * \brief Function for adding next port to visual block
      * \param parentGrid main grid of visual block
      * \param next metadata for setting up new port
-     * \param row  row in grid where should be new port
      * \param col column of new port, when 0 == input port
      * \param canvas main pane, where blocks and lines are located
      */
-    protected void newPort(GridPane parentGrid, Type next, int row, int col, Pane canvas) {
+    protected void newPort(GridPane parentGrid, Type next, int row, Pane canvas) {
         GridPane portGrid = new GridPane();
         Circle circle = new Circle(0, 0, 5);
         Label inputType = new Label(next.getName());
@@ -71,11 +70,11 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
         portGrid.setConstraints(inputType, 0, 0);
         portGrid.getChildren().addAll(circle, inputType);
         portGrid.setConstraints(circle, 0, 1);
-        parentGrid.setConstraints(portGrid, col, row);
+        parentGrid.setConstraints(portGrid, 0, row);
         parentGrid.getChildren().addAll(portGrid);
         setValue(circle, portGrid, next);
         next.setNode(circle);
-        if (col == 0)
+        if (canvas == null)
             this.setValue(circle, portGrid, next);
         else
         {
@@ -191,7 +190,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
         GridPane portGrid = (GridPane)out.getNode().getParent();
             int idx = 2;
             out.setStatus(3);
-            removeGridVals(portGrid);
+            removeGridVals(portGrid, false);
             for (Map.Entry<String, Double> entry: out.getItems().entrySet()) {
                 System.out.println("out "+idx);
                 DecimalFormat df = new DecimalFormat("#.####");
@@ -233,7 +232,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
      * because first label is type name, second is port node/circle
      * \param grid gridpain, which can contain unwanted labels
      */
-    public int removeGridVals(GridPane grid) {
+    public int removeGridVals(GridPane grid, Boolean input) {
         int i = 0;
         LinkedList<javafx.scene.Node> nodesToRemove = new LinkedList<>();
 
@@ -260,7 +259,7 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
         circle.setOnMousePressed(e -> {
             GridPane grid = (GridPane) circle.getParent();
 
-            if (removeGridVals(grid) > 1) {
+            if (removeGridVals(grid, false) > 1) {
                 this.lineActualize(1);
             }
             Bounds boundsInBorder = circle.localToScene(border.getBoundsInLocal());
@@ -346,14 +345,20 @@ public abstract class Block implements BlockInterface, java.io.Serializable {
         windowPane.setTop(titleBar);
 
         int idx = 0;
+        GridPane inGrid = new GridPane();
+        grid.setConstraints(inGrid, 0, 0);
+        grid.getChildren().add(inGrid);
         for (Type input : inputs) {
-            newPort(grid, input, idx, 0, null);
+            newPort(inGrid, input, idx, null);
             idx += 1;
         }
 
         idx = 0;
+        GridPane outGrid = new GridPane();
+        grid.setConstraints(outGrid, 1, 0);
+        grid.getChildren().add(outGrid);
         for (Type output : outputs) {
-            newPort(grid, output, idx, 1, canvas);
+            newPort(outGrid, output, idx, canvas);
             idx += 1;
         }
         windowPane.setCenter(grid);

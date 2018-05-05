@@ -24,13 +24,13 @@ public class BlockSum extends Block {
         int idx = parentGrid.getRowIndex(this.inputs.getLast().getNode().getParent());
 
         idx += 1;
-        newPort(parentGrid, next, idx, 0, null);
+        newPort(parentGrid, next, idx, null);
         this.inputs.add(next);
     }
     @Override
-    public int removeGridVals(GridPane grid) {
-        int out = super.removeGridVals(grid);
-        if (out <= 2)
+    public int removeGridVals(GridPane grid, Boolean input) {
+        int out = super.removeGridVals(grid, input);
+        if (out <= 2 && input)
             newPort(grid);
         return out;
     }

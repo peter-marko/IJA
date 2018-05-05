@@ -106,14 +106,10 @@ public abstract class Type implements TypeInterface, java.io.Serializable {
     public void step () {
         // type check + data transfer
         for (Type dst : this.dst) {
-            if (this.name != dst.name) {
-                throw new RuntimeException("Names of types are different"+this.name+ dst.name);
-            }
-            dst.name = this.name;
+            System.out.println("propagujem\n");
             Iterator tmp_in = this.items.entrySet().iterator();
             while (tmp_in.hasNext()) {
                 Map.Entry i = (Map.Entry)tmp_in.next();
-                tmp_in.remove(); // avoids a ConcurrentModificationException
                 dst.items.put((String)i.getKey(), (double)i.getValue());
                 System.out.println((String)i.getKey() + " = " + (double)i.getValue());
                 // o.setValue(i.getValue());

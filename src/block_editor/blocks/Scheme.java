@@ -141,7 +141,7 @@ public class Scheme  implements java.io.Serializable {
                         }
                         GridPane grid = (GridPane) circle.getParent();
                         // removing user inputText if set
-                        b.removeGridVals(grid);
+                        b.removeGridVals(grid, true);
                         b.lineActualize(1);
 
                         l.setEndX(bounds.getMinX() - 5);
