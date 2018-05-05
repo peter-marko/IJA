@@ -1,5 +1,9 @@
 package block_editor.types;
 
+/**
+ * Interface for comunication with types
+ * @author Stanislav Mechl
+ */
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Queue;

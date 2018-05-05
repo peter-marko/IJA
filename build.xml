@@ -47,7 +47,9 @@
 </target>
 
   <target name="doc" description="generate documentation">
-    <javadoc sourcepath="${src.dir}" destdir="${docs.dir}">
+    <javadoc destdir="${docs.dir}">
+    <fileset dir="${src.dir}"/>
+    <arg value="-html5"/>
     </javadoc>
   </target>
 </project>

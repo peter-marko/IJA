@@ -1,5 +1,9 @@
 package block_editor.blocks;
 
+/**
+ * Interface for comunication with blocks
+ * @author Stanislav Mechl
+ */
 import javafx.scene.layout.Pane;
 import java.util.LinkedList;
 import block_editor.types.*;

@@ -1,5 +1,10 @@
 package block_editor.blocks;
 
+/**
+ * Block for calculation of vector between two points
+ * @author Stanislav Mechl
+ */
+
 import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;

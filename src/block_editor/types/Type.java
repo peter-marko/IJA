@@ -1,5 +1,9 @@
 package block_editor.types;
 
+/**
+ * Holding common information about types which are used for storing date about ports and connection between blocks
+ * @author Stanislav Mechl
+ */
 import java.util.LinkedList;
 import javafx.scene.paint.Color;
 import java.util.HashMap;

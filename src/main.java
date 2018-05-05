@@ -1,3 +1,10 @@
+package block_editor;
+
+/**
+ * Main class starting application and declaring basic GUI
+ * @author Peter Marko
+ */
+
 import java.util.LinkedList;
 import java.util.List;
 import javafx.stage.FileChooser;
@@ -19,8 +26,6 @@ import javafx.scene.input.MouseEvent;
 
 import block_editor.blocks.*;
 import block_editor.types.*;
-
-//import java.util.LinkedList;
 
 public class main extends Application {
     public GridPane grid;

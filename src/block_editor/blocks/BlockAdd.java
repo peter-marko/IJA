@@ -1,5 +1,10 @@
 package block_editor.blocks;
 
+/**
+ * Block calculating sum of two simple values from two ports
+ * @author Peter Marko
+ */
+
 import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;

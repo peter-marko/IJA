@@ -1,5 +1,8 @@
 package block_editor.types;
-// one dimensional coordinate
+/**
+ * Type declaring point in one dimensional coordinate system
+ * @author Stanislav Mechl
+ */
 public class TypeSimple extends Type {
     
     public TypeSimple(Integer block_id) {

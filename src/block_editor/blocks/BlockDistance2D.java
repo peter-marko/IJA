@@ -1,5 +1,8 @@
 package block_editor.blocks;
-
+/**
+ * Block calculating distance between two points in 2D
+ * @author Peter Marko
+ */
 import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;

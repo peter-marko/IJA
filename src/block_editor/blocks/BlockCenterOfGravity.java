@@ -1,8 +1,13 @@
 package block_editor.blocks;
 
+
+/**
+ * Bloc calculating sum center of gravity from multiple coordinates2D from multiple ports
+ * @author Peter Marko
+ */
+
 import javafx.scene.paint.Color;
 import javafx.scene.layout.GridPane;
-
 import java.util.LinkedList;
 import java.util.Map;
 import javafx.scene.shape.Circle;

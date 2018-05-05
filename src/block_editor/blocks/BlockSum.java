@@ -1,5 +1,10 @@
 package block_editor.blocks;
 
+/**
+ * Bloc calculating sum of multiple simple values from multiple ports
+ * @author Peter Marko
+ */
+
 import javafx.scene.paint.Color;
 import javafx.scene.layout.GridPane;
 import java.util.Map;

@@ -1,4 +1,11 @@
 package block_editor.blocks;
+
+
+/**
+ * Class Holding information about line connecting ports
+ * @author Peter Marko
+ */
+
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import java.util.Map;

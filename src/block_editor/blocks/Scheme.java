@@ -1,10 +1,14 @@
 package block_editor.blocks;
 
+/**
+ * Holds information about every block in scheme
+ * declares methods for cycle checking, order of block execution
+ * Used for serialization, deserialization and search of blocks
+ * @author Stanislav Mechl
+ */
+
 import java.io.*;
 import java.util.LinkedList;
-
-//import javafx.util.Pair;
-
 import javafx.scene.shape.Circle;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;

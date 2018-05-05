@@ -1,5 +1,10 @@
 package block_editor.blocks;
 
+/**
+ * Holds data common for blocks, creates visual blocks
+ * @author Stanislav Mechl
+ * @author Peter Marko
+ */
 import javafx.geometry.Insets;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
