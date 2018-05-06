@@ -1,15 +1,15 @@
 package block_editor.blocks;
 
 /**
- * Block for calculation of vector representing line
+ * Block for getting a middle point of the line
  * @author Stanislav Mechl
  */
 
 import javafx.scene.paint.Color;
 import java.util.Map;
 import block_editor.types.*;
-public class BlockVector extends Block {
-    public BlockVector (String newName, Integer newID) {
+public class BlockMiddleOfLine extends Block {
+    public BlockMiddleOfLine (String newName, Integer newID) {
         this.name = newName;
         this.id = newID;
         this.inputs.add(new TypeLine(newID));
@@ -17,8 +17,8 @@ public class BlockVector extends Block {
     }
     public void execute () {
         Type in = inputs.get(0);
-        double output_x = in.getVal("x2") - in.getVal("x1");
-        double output_y = in.getVal("y2") - in.getVal("y1");
+        double output_x = (in.getVal("x1") + in.getVal("x2")) / 2;
+        double output_y = (in.getVal("y1") + in.getVal("y2")) / 2;
         Type cur = outputs.getFirst();
         cur.putVal("x", output_x);
         cur.putVal("y", output_y);

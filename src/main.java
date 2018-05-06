@@ -1,5 +1,3 @@
-package block_editor;
-
 /**
  * Main class starting application and declaring basic GUI
  * @author Peter Marko
@@ -184,6 +182,8 @@ public class main extends Application {
         addBlockToMenu("BlockSum", "Sum", menuBlock);
         addBlockToMenu("BlockAdd", "Add", menuBlock);
         addBlockToMenu("BlockCenterOfGravity", "Center of gravity", menuBlock);
+        addBlockToMenu("BlockMakeLine", "Make line", menuBlock);
+        addBlockToMenu("BlockMiddleOfLine", "Middle of line", menuBlock);
         
         Button step = new Button(); // --------------------------------------------------------------------- step
         step.setText("Step");

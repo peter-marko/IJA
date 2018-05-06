@@ -1,3 +1,5 @@
 Block-editor.jar
 
-bin/*
+build/*
+
+dest-client/ija-client.jar

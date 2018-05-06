@@ -1,5 +1,3 @@
-package block_editor;
-
 import java.util.LinkedList;
 import java.util.List;
 import javafx.stage.FileChooser;
