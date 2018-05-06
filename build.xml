@@ -27,9 +27,12 @@
     debug="true"
     debuglevel="lines,vars,source">
   </javac>
-</target>
 
-<target name="jar" depends="compile">
+  <javadoc destdir="${doc.dir}">
+    <fileset dir="${src.dir}"/>
+    <arg value="-html5"/>
+  </javadoc>
+
   <jar destfile="${dest.dir}/ija-client.jar" basedir="${build.dir}">
     <manifest>
       <attribute name="Main-Class" value="main" />
@@ -37,22 +40,13 @@
   </jar>
 </target>
 
-
-<target name="main" depends="compile, jar">
+<target name="main" depends="compile, run">
   <description>Main target</description>
 </target>
 
-<target name="doc" description="generate documentation">
-  <javadoc destdir="${doc.dir}">
-    <fileset dir="${src.dir}"/>
-    <arg value="-html5"/>
-  </javadoc>
-</target>
-
-<target name="run" description="runs application">
+<target name="run" description="run application">
   <java jar="dest-client/ija-client.jar" fork="true" failonerror="true">
   </java>
 </target>
-
 
 </project>
